@@ -1,5 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import database from "../config/database";
+import Cliente from './cliente';
+import Manicure from './manicure';
 
 interface ClienteManicureAtributos{
   manicureidusuario: string;
@@ -15,6 +17,10 @@ class ClienteManicure extends Model<ClienteManicureAtributos, ClienteManicureCre
   public clienteidusuario!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  // Asociaciones
+  public readonly cliente?: Cliente;
+  public readonly manicure?: Manicure;
 }
 
 ClienteManicure.init(
@@ -53,5 +59,9 @@ ClienteManicure.init(
     sequelize: database,
   }
 );
+
+// Asociaciones
+ClienteManicure.belongsTo(Cliente, { foreignKey: 'clienteidusuario', as: 'cliente' });
+ClienteManicure.belongsTo(Manicure, { foreignKey: 'manicureidusuario', as: 'manicure' });
 
 export default ClienteManicure;

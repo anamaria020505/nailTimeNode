@@ -11,6 +11,8 @@ interface UsuarioRequest extends Request {
     nombre: string;
     contrasena: string;
     rol: string;
+    contrasenaActual?: string;
+    nuevaContrasena?: string;
   };
   params: {
     id: string;
@@ -92,6 +94,9 @@ export const crearUsuario = async (req: UsuarioRequest, res: Response): Promise<
         await Manicure.create({
           idusuario: usuario,
           nombre,
+          direccion: '', // Será actualizado después
+          provincia: '', // Será actualizado después
+          municipio: '', // Será actualizado después
           telefono: '' // Será actualizado después
         });
       }
@@ -123,10 +128,10 @@ export const crearUsuario = async (req: UsuarioRequest, res: Response): Promise<
 // Obtener todos los usuarios
 export const obtenerUsuarios = async (req: UsuarioRequest, res: Response): Promise<void> => {
   try {
-    const { limit = '50', offset = '0', rol, nombre, usuario: usuarioQuery } = req.query;
+    const { limit, offset, rol, nombre, usuario: usuarioQuery } = req.query;
 
-    const limitNum = parseInt(limit, 10);
-    const offsetNum = parseInt(offset, 10);
+    const limitNum = parseInt(typeof limit === 'string' ? limit : '50', 10);
+    const offsetNum = parseInt(typeof offset === 'string' ? offset : '0', 10);
 
     let whereCondition: any = {};
     if (rol) whereCondition.rol = rol;

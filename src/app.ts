@@ -1,7 +1,7 @@
-import * as express from 'express';
-import * as cors from 'cors';
-import * as morgan from 'morgan';
-import * as dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import dotenv from 'dotenv';
 import sequelize, { testConnection } from '../config/database';
 import '../models';
 import clienteRoutes from '../routes/cliente';

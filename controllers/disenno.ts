@@ -66,10 +66,10 @@ export const crearDisenno = async (req: DisennoRequest, res: Response): Promise<
 // Obtener todos los diseños
 export const obtenerDisennos = async (req: DisennoRequest, res: Response): Promise<void> => {
   try {
-    const { limit = '50', offset = '0', manicureId } = req.query;
+    const { limit, offset, manicureId } = req.query;
 
-    const limitNum = parseInt(limit, 10);
-    const offsetNum = parseInt(offset, 10);
+    const limitNum = parseInt(typeof limit === 'string' ? limit : '50', 10);
+    const offsetNum = parseInt(typeof offset === 'string' ? offset : '0', 10);
 
     let whereCondition = {};
     if (manicureId) {
@@ -164,9 +164,9 @@ export const obtenerDisennosPorManicure = async (req: DisennoRequest, res: Respo
       return;
     }
 
-    const { limit = '20', offset = '0' } = req.query;
-    const limitNum = parseInt(limit, 10);
-    const offsetNum = parseInt(offset, 10);
+    const { limit, offset } = req.query;
+    const limitNum = parseInt(typeof limit === 'string' ? limit : '20', 10);
+    const offsetNum = parseInt(typeof offset === 'string' ? offset : '0', 10);
 
     const disennos = await Disenno.findAll({
       where: { manicureidusuario: manicureId },
@@ -299,8 +299,8 @@ export const eliminarDisenno = async (req: DisennoRequest, res: Response): Promi
 // Buscar diseños recientes (últimos N diseños)
 export const obtenerDisennosRecientes = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { limit = '10' } = req.query;
-    const limitNum = parseInt(limit, 10);
+    const { limit } = req.query;
+    const limitNum = parseInt(typeof limit === 'string' ? limit : '10', 10);
 
     const disennos = await Disenno.findAll({
       include: [{

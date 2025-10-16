@@ -16,6 +16,8 @@ interface ClienteManicureRequest extends Request {
   query: {
     clienteId?: string;
     manicureId?: string;
+    manicureidusuario?: string;
+    clienteidusuario?: string;
   };
 }
 

@@ -360,9 +360,9 @@ export const marcarNotificacionComoLeida = async (req: NotificacionRequest, res:
 // Marcar múltiples notificaciones como leídas
 export const marcarNotificacionesComoLeidas = async (req: NotificacionRequest, res: Response): Promise<void> => {
   try {
-    const { clienteId } = req.body;
+    const { clienteidusuario } = req.body;
 
-    if (!clienteId) {
+    if (!clienteidusuario) {
       res.status(400).json({
         error: 'ID de cliente requerido',
         mensaje: 'Debe proporcionar el ID del cliente'
@@ -372,7 +372,7 @@ export const marcarNotificacionesComoLeidas = async (req: NotificacionRequest, r
 
     const notificacionesNoLeidas = await Notificacion.findAll({
       where: {
-        clienteidusuario: clienteId,
+        clienteidusuario,
         leido: false
       }
     });
