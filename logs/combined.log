@@ -18,3 +18,9 @@
 2025-10-18T02:18:18.844Z [ERROR]: Error: 500 - PUT /usuarios/hgfdxbcvnmjkuiykgjhvbnjhkyuk - error - Usuario no encontrado - IP: ::1
 2025-10-18T02:22:52.138Z [ERROR]: Error: 500 - PUT /usuarios/estadistica - error - Usuario no encontrado - IP: ::1
 2025-10-18T02:23:58.994Z [ERROR]: Error: 404 - GET /usuarios/estadistica - fail - Usuario no encontrado - IP: ::1
+2025-10-18T02:40:09.832Z [ERROR]: Error: 400 - POST /servicios - fail - Nombre y ID de manicure son campos requeridos - IP: ::1
+2025-10-18T02:42:28.919Z [ERROR]: Error: 400 - POST /servicios - fail - Nombre y ID de manicure son campos requeridos - IP: ::1
+2025-10-18T02:44:11.086Z [ERROR]: Error: 400 - POST /servicios - fail - El ID de manicure proporcionado no existe - IP: ::1
+2025-10-18T02:56:10.779Z [ERROR]: Error: 500 - GET /servicios/1/5 - error - missing FROM-clause entry for table "manicure->usuario" - IP: ::1
+2025-10-18T03:09:30.037Z [ERROR]: Error: 404 - DELETE /servicios/2 - fail - Servicio no encontrado - IP: ::1
+2025-10-18T03:09:35.883Z [ERROR]: Error: 404 - GET /servicios/2 - fail - Servicio no encontrado - IP: ::1

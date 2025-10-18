@@ -6,6 +6,7 @@ import sequelize, { testConnection } from "../config/database";
 import "../models";
 
 import usuarioRoutes from "../routes/usuario";
+import servicioRoutes from "../routes/servicio";
 
 const errorHandler = require("../middlewares/errorHandler.js");
 
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 
 app.use("/usuarios", usuarioRoutes);
+app.use("/servicios", servicioRoutes);
 
 app.use(errorHandler);
 
