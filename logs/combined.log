@@ -1,0 +1,17 @@
+2025-10-17T15:10:39.231Z [ERROR]: Error: 400 - GET /usuarios/0/20 - fail - Invalid pagination parameters - IP: ::1
+2025-10-17T15:15:49.405Z [ERROR]: Error: 500 - GET /usuarios/1 - error - operator does not exist: character varying = integer - IP: ::1
+2025-10-17T15:16:19.854Z [ERROR]: Error: 500 - GET /usuarios/1 - error - operator does not exist: character varying = integer - IP: ::1
+2025-10-17T15:18:58.569Z [ERROR]: Error: 404 - GET /usuarios/delvis - fail - usuario no encontrado - IP: ::1
+2025-10-17T15:47:49.472Z [ERROR]: Error: 500 - POST /usuarios/ - error - Cannot destructure property 'usuario' of 'req.body' as it is undefined. - IP: ::1
+2025-10-17T15:49:37.541Z [ERROR]: Error: 400 - POST /usuarios/ - fail - Username, email and password are required - IP: ::1
+2025-10-17T16:09:40.009Z [ERROR]: Error: 404 - DELETE /usuarios/cliente1 - fail - Usuario no encontrado - IP: ::1
+2025-10-18T01:05:35.392Z [ERROR]: Error: 500 - PUT /usuarios/cliente1 - error - Usuario no encontrado - IP: ::1
+2025-10-18T01:05:58.160Z [ERROR]: Error: 500 - PUT /usuarios/cliente1 - error - Usuario no encontrado - IP: ::1
+2025-10-18T01:07:57.144Z [ERROR]: Error: 400 - PUT /usuarios/cliente1 - fail - El usuario ya existe - IP: ::1
+2025-10-18T01:15:06.833Z [ERROR]: Error: 400 - PUT /usuarios/cliente1 - fail - El usuario ya existe - IP: ::1
+2025-10-18T01:17:08.665Z [ERROR]: Error: 400 - PUT /usuarios/cliente1 - fail - El usuario ya existe - IP: ::1
+2025-10-18T01:19:12.558Z [ERROR]: Error: 400 - POST /usuarios/ - fail - El usuario ya existe - IP: ::1
+2025-10-18T01:19:38.536Z [ERROR]: Error: 400 - POST /usuarios/ - fail - El usuario ya existe - IP: ::1
+2025-10-18T01:22:14.609Z [ERROR]: Error: 500 - PUT /usuarios/cliente1 - error - insert or update on table "cliente" violates foreign key constraint "cliente_idusuario_fkey" - IP: ::1
+2025-10-18T01:22:48.959Z [ERROR]: Error: 500 - PUT /usuarios/cliente1 - error - insert or update on table "cliente" violates foreign key constraint "cliente_idusuario_fkey" - IP: ::1
+2025-10-18T01:39:46.820Z [ERROR]: Error: 500 - PUT /usuarios/cliente1 - error - Usuario no encontrado - IP: ::1

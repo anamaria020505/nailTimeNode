@@ -1,19 +1,21 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import database from "../config/database";
 
-interface ClienteAtributos{
+interface ClienteAtributos {
   idusuario: string;
-  nombre: string;
   telefono: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-interface ClienteCreationAttributes extends Optional<ClienteAtributos, 'createdAt' | 'updatedAt'> {}
+interface ClienteCreationAttributes
+  extends Optional<ClienteAtributos, "createdAt" | "updatedAt"> {}
 
-class Cliente extends Model<ClienteAtributos, ClienteCreationAttributes> implements ClienteAtributos {
+class Cliente
+  extends Model<ClienteAtributos, ClienteCreationAttributes>
+  implements ClienteAtributos
+{
   public idusuario!: string;
-  public nombre!: string;
   public telefono!: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -26,13 +28,9 @@ Cliente.init(
       allowNull: false,
       primaryKey: true,
       references: {
-        model: 'usuario',
-        key: 'usuario'
-      }
-    },
-    nombre: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
+        model: "usuario",
+        key: "usuario",
+      },
     },
     telefono: {
       type: DataTypes.STRING(255),
@@ -50,7 +48,7 @@ Cliente.init(
     },
   },
   {
-    tableName: 'cliente',
+    tableName: "cliente",
     sequelize: database,
   }
 );

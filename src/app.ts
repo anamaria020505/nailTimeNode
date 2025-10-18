@@ -1,18 +1,14 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import dotenv from 'dotenv';
-import sequelize, { testConnection } from '../config/database';
-import '../models';
-import clienteRoutes from '../routes/cliente';
-import clienteManicureRoutes from '../routes/clienteManicure';
-import disennoRoutes from '../routes/disenno';
-import horarioRoutes from '../routes/horario';
-import manicureRoutes from '../routes/manicure';
-import servicioRoutes from '../routes/servicio';
-import notificacionRoutes from '../routes/notificacion';
-import reservacionRoutes from '../routes/reservacion';
-import usuarioRoutes from '../routes/usuario';
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import dotenv from "dotenv";
+import sequelize, { testConnection } from "../config/database";
+import "../models";
+
+import usuarioRoutes from "../routes/usuario";
+
+const errorHandler = require("../middlewares/errorHandler.js");
+
 dotenv.config();
 
 const app = express();
@@ -22,20 +18,15 @@ testConnection();
 
 // middlewares
 app.use(cors());
-app.use(morgan('combined'));
-app.use(express.json({ limit: '10mb' }));
+app.use(morgan("combined"));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
-app.use('/api/clientes', clienteRoutes);
-app.use('/api/clientes-manicures', clienteManicureRoutes);
-app.use('/api/disennos', disennoRoutes);
-app.use('/api/horarios', horarioRoutes);
-app.use('/api/manicures', manicureRoutes);
-app.use('/api/servicios', servicioRoutes);
-app.use('/api/notificaciones', notificacionRoutes);
-app.use('/api/reservaciones', reservacionRoutes);
-app.use('/api/usuarios', usuarioRoutes);
+
+app.use("/usuarios", usuarioRoutes);
+
+app.use(errorHandler);
 
 export default app;
 
@@ -43,13 +34,12 @@ export default app;
 async function connectDB() {
   try {
     // Sincronizar modelos (en desarrollo)
-    if (process.env.NODE_ENV === 'development') {
-      await sequelize.sync({ force: false, alter: true});
-      console.log('✅ Modelos sincronizados con la base de datos');
-
+    if (process.env.NODE_ENV === "development") {
+      await sequelize.sync({ force: false, alter: true });
+      console.log("✅ Modelos sincronizados con la base de datos");
     }
   } catch (error) {
-    console.error('❌ Error conectando a la base de datos:', error);
+    console.error("❌ Error conectando a la base de datos:", error);
     process.exit(1);
   }
 }

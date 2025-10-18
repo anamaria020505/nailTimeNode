@@ -1,9 +1,8 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import database from "../config/database";
 
-interface ManicureAtributos{
+interface ManicureAtributos {
   idusuario: string;
-  nombre: string;
   foto?: string;
   direccion: string;
   provincia: string;
@@ -13,11 +12,14 @@ interface ManicureAtributos{
   updatedAt?: Date;
 }
 
-interface ManicureCreationAttributes extends Optional<ManicureAtributos, 'foto' | 'createdAt' | 'updatedAt'> {}
+interface ManicureCreationAttributes
+  extends Optional<ManicureAtributos, "foto" | "createdAt" | "updatedAt"> {}
 
-class Manicure extends Model<ManicureAtributos, ManicureCreationAttributes> implements ManicureAtributos {
+class Manicure
+  extends Model<ManicureAtributos, ManicureCreationAttributes>
+  implements ManicureAtributos
+{
   public idusuario!: string;
-  public nombre!: string;
   public foto?: string;
   public direccion!: string;
   public provincia!: string;
@@ -34,13 +36,9 @@ Manicure.init(
       allowNull: false,
       primaryKey: true,
       references: {
-        model: 'usuario',
-        key: 'usuario'
-      }
-    },
-    nombre: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
+        model: "usuario",
+        key: "usuario",
+      },
     },
     foto: {
       type: DataTypes.STRING(255),
@@ -74,7 +72,7 @@ Manicure.init(
     },
   },
   {
-    tableName: 'manicure',
+    tableName: "manicure",
     sequelize: database,
   }
 );
