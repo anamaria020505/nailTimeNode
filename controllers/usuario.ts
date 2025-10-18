@@ -3,7 +3,6 @@ import Cliente from "../models/cliente";
 import Manicure from "../models/manicure";
 const AppError = require("../errors/AppError");
 
-// Obtener todos los usuarios
 export const obtenerUsuariosPaginated = async (
   page: number,
   limit: number
