@@ -15,3 +15,6 @@
 2025-10-18T01:22:14.609Z [ERROR]: Error: 500 - PUT /usuarios/cliente1 - error - insert or update on table "cliente" violates foreign key constraint "cliente_idusuario_fkey" - IP: ::1
 2025-10-18T01:22:48.959Z [ERROR]: Error: 500 - PUT /usuarios/cliente1 - error - insert or update on table "cliente" violates foreign key constraint "cliente_idusuario_fkey" - IP: ::1
 2025-10-18T01:39:46.820Z [ERROR]: Error: 500 - PUT /usuarios/cliente1 - error - Usuario no encontrado - IP: ::1
+2025-10-18T02:18:18.844Z [ERROR]: Error: 500 - PUT /usuarios/hgfdxbcvnmjkuiykgjhvbnjhkyuk - error - Usuario no encontrado - IP: ::1
+2025-10-18T02:22:52.138Z [ERROR]: Error: 500 - PUT /usuarios/estadistica - error - Usuario no encontrado - IP: ::1
+2025-10-18T02:23:58.994Z [ERROR]: Error: 404 - GET /usuarios/estadistica - fail - Usuario no encontrado - IP: ::1

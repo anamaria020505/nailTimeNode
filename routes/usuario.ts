@@ -28,10 +28,14 @@ router.post("/", async (req, res, next) => {
     } = req.body.manicure;
 
     if (!usuario || !nombre || !contrasena || !rol) {
-      throw new AppError("Username, email and password are required", 400);
+      throw new AppError(
+        "Usuario nombre, contraseña y rol son requeridos",
+        400
+      );
     }
 
     const hashedPassword = await hashPassword(contrasena);
+
     let user = await crearUsuario(
       usuario,
       nombre,
@@ -80,7 +84,6 @@ router.get("/:usuario", async (req, res, next) => {
 });
 
 router.get("/:page/:limit", async (req, res, next) => {
-  // Obtener todos los usuarios (con filtros)
   try {
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
@@ -109,7 +112,13 @@ router.put("/:usuarioU", async (req, res, next) => {
     } = req.body.manicure;
 
     if (!usuarioU) {
-      return res.status(400).json({ message: "Usuario es requerido" });
+      return res
+        .status(400)
+        .json({ message: "Usuario a actualizar es requerido" });
+    }
+
+    if (!usuario || !nombre || !rol) {
+      throw new AppError("Usuario,nombre y rol son requeridos", 400);
     }
 
     const hashedPassword = contrasena
