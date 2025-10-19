@@ -3,7 +3,7 @@
 node_modules
 
 
-
+.env
 
 logs/combined.log
 logs/combined.log
