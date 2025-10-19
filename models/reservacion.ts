@@ -1,13 +1,13 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import database from "../config/database";
 
-interface ReservacionAtributos{
+interface ReservacionAtributos {
   id: number;
   disenno?: string;
   tamanno?: string;
   precio: number;
   fecha: Date;
-  estado: string;
+  estado: "pendiente" | "confirmada" | "completada" | "cancelada";
   horarioid: number;
   clienteidusuario: string;
   servicioid: number;
@@ -15,15 +15,22 @@ interface ReservacionAtributos{
   updatedAt?: Date;
 }
 
-interface ReservacionCreationAttributes extends Optional<ReservacionAtributos, 'id' | 'disenno' | 'tamanno' | 'createdAt' | 'updatedAt'> {}
+interface ReservacionCreationAttributes
+  extends Optional<
+    ReservacionAtributos,
+    "id" | "disenno" | "tamanno" | "createdAt" | "updatedAt"
+  > {}
 
-class Reservacion extends Model<ReservacionAtributos, ReservacionCreationAttributes> implements ReservacionAtributos {
+class Reservacion
+  extends Model<ReservacionAtributos, ReservacionCreationAttributes>
+  implements ReservacionAtributos
+{
   public id!: number;
   public disenno?: string;
   public tamanno?: string;
   public precio!: number;
   public fecha!: Date;
-  public estado!: string;
+  public estado!: "pendiente" | "confirmada" | "completada" | "cancelada";
   public horarioid!: number;
   public clienteidusuario!: string;
   public servicioid!: number;
@@ -55,32 +62,37 @@ Reservacion.init(
       allowNull: false,
     },
     estado: {
-      type: DataTypes.STRING(255),
+      type: DataTypes.ENUM(
+        "pendiente",
+        "confirmada",
+        "completada",
+        "cancelada"
+      ),
       allowNull: false,
     },
     horarioid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'horario',
-        key: 'id'
-      }
+        model: "horario",
+        key: "id",
+      },
     },
     clienteidusuario: {
       type: DataTypes.STRING(255),
       allowNull: false,
       references: {
-        model: 'cliente',
-        key: 'idusuario'
-      }
+        model: "cliente",
+        key: "idusuario",
+      },
     },
     servicioid: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'servicio',
-        key: 'id'
-      }
+        model: "servicio",
+        key: "id",
+      },
     },
     createdAt: {
       type: DataTypes.DATE,
@@ -94,7 +106,7 @@ Reservacion.init(
     },
   },
   {
-    tableName: 'reservacion',
+    tableName: "reservacion",
     sequelize: database,
   }
 );

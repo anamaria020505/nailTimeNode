@@ -1,0 +1,189 @@
+import Reservacion from "../models/reservacion";
+import Cliente from "../models/cliente";
+import Horario from "../models/horario";
+import Servicio from "../models/servicio";
+const AppError = require("../errors/AppError");
+
+export const obtenerReservacionesPaginated = async (
+  page: number,
+  limit: number
+): Promise<any> => {
+  const offset = (page - 1) * limit;
+
+  const { count, rows } = await Reservacion.findAndCountAll({
+    include: [
+      { model: Cliente, as: "cliente", required: false },
+      { model: Horario, as: "horario", required: false },
+      { model: Servicio, as: "servicio", required: false },
+    ],
+    order: [["fecha", "DESC"]],
+    limit: limit,
+    offset: offset,
+  });
+
+  return {
+    count,
+    rows,
+  };
+};
+
+export const obtenerReservaciones = async (): Promise<any> => {
+  const { count, rows } = await Reservacion.findAndCountAll({
+    include: [
+      { model: Cliente, as: "cliente", required: false },
+      { model: Horario, as: "horario", required: false },
+      { model: Servicio, as: "servicio", required: false },
+    ],
+    order: [["fecha", "DESC"]],
+  });
+
+  return {
+    count,
+    rows,
+  };
+};
+
+export const obtenerReservacionPorId = async (id: number) => {
+  const reservacion = await Reservacion.findByPk(id, {
+    include: [
+      { model: Cliente, as: "cliente", required: false },
+      { model: Horario, as: "horario", required: false },
+      { model: Servicio, as: "servicio", required: false },
+    ],
+  });
+
+  return reservacion;
+};
+
+export const crearReservacion = async (
+  disenno: string | undefined,
+  tamanno: string | undefined,
+  precio: number,
+  fecha: Date,
+  estado: "pendiente" | "confirmada" | "completada" | "cancelada",
+  horarioid: number,
+  clienteidusuario: string,
+  servicioid: number
+) => {
+  const reservacion = await Reservacion.create({
+    disenno,
+    tamanno,
+    precio,
+    fecha,
+    estado,
+    horarioid,
+    clienteidusuario,
+    servicioid,
+  });
+
+  return reservacion;
+};
+
+export const actualizarReservacion = async (
+  id: number,
+  disenno: string | undefined,
+  tamanno: string | undefined,
+  precio: number,
+  fecha: Date,
+  estado: "pendiente" | "confirmada" | "completada" | "cancelada",
+  horarioid: number,
+  clienteidusuario: string,
+  servicioid: number
+) => {
+  // Crear objeto con los datos a actualizar
+  const updateData: any = {
+    disenno,
+    tamanno,
+    precio,
+    fecha,
+    estado,
+    horarioid,
+    clienteidusuario,
+    servicioid,
+  };
+
+  // Actualizar la reservación usando el método update de Sequelize
+  const [updated] = await Reservacion.update(updateData, {
+    where: { id },
+    returning: true,
+  });
+
+  if (updated === 0) {
+    throw new AppError("Reservación no encontrada");
+  }
+};
+
+export const eliminarReservacion = async (id: number) => {
+  const reservacion = await Reservacion.destroy({ where: { id } });
+  return reservacion;
+};
+
+export const obtenerReservacionesPorCliente = async (
+  clienteidusuario: string
+) => {
+  const { count, rows } = await Reservacion.findAndCountAll({
+    where: { clienteidusuario },
+    include: [
+      { model: Cliente, as: "cliente", required: false },
+      { model: Horario, as: "horario", required: false },
+      { model: Servicio, as: "servicio", required: false },
+    ],
+    order: [["fecha", "DESC"]],
+  });
+
+  return {
+    count,
+    rows,
+  };
+};
+
+export const obtenerReservacionesPorEstado = async (estado: string) => {
+  const { count, rows } = await Reservacion.findAndCountAll({
+    where: { estado },
+    include: [
+      { model: Cliente, as: "cliente", required: false },
+      { model: Horario, as: "horario", required: false },
+      { model: Servicio, as: "servicio", required: false },
+    ],
+    order: [["fecha", "DESC"]],
+  });
+
+  return {
+    count,
+    rows,
+  };
+};
+
+export const cambiarEstadoReservacion = async (
+  id: number,
+  nuevoEstado: "pendiente" | "confirmada" | "completada" | "cancelada",
+  precio?: number
+) => {
+  // Crear objeto con los datos a actualizar
+  const updateData: any = {
+    estado: nuevoEstado.toLowerCase(),
+  };
+
+  // Si el estado es completada y se proporciona un precio, actualizarlo también
+  if (nuevoEstado.toLowerCase() === "completada" && precio !== undefined) {
+    if (typeof precio !== "number" || precio < 0) {
+      throw new AppError(
+        "El precio debe ser un número válido mayor o igual a 0"
+      );
+    }
+    updateData.precio = precio;
+  }
+
+  // Si el estado es completada pero no se proporciona precio, solo actualizar el estado
+  // Si el estado no es completada, no actualizar el precio incluso si se proporciona
+
+  // Actualizar la reservación
+  const [updated] = await Reservacion.update(updateData, {
+    where: { id },
+    returning: true,
+  });
+
+  if (updated === 0) {
+    throw new AppError("Reservación no encontrada");
+  }
+};
