@@ -2,6 +2,7 @@ import Reservacion from "../models/reservacion";
 import Cliente from "../models/cliente";
 import Horario from "../models/horario";
 import Servicio from "../models/servicio";
+import * as notificacionController from "./notificacion";
 const AppError = require("../errors/AppError");
 
 export const obtenerReservacionesPaginated = async (
@@ -76,6 +77,19 @@ export const crearReservacion = async (
     servicioid,
   });
 
+  // Obtener el horario para conseguir el manicureidusuario
+  const horario = await Horario.findByPk(horarioid);
+  if (horario) {
+    // Enviar notificación a la manicure
+    const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES');
+    const mensaje = `Nueva reservación creada para el ${fechaFormateada}. Estado: ${estado}`;
+    await notificacionController.crearNotificacionParaManicure(
+      reservacion.id,
+      mensaje,
+      horario.manicureidusuario
+    );
+  }
+
   return reservacion;
 };
 
@@ -111,11 +125,43 @@ export const actualizarReservacion = async (
   if (updated === 0) {
     throw new AppError("Reservación no encontrada");
   }
+
+  // Obtener el horario para conseguir el manicureidusuario
+  const horario = await Horario.findByPk(horarioid);
+  if (horario) {
+    // Enviar notificación a la manicure
+    const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES');
+    const mensaje = `Reservación #${id} modificada para el ${fechaFormateada}. Nuevo estado: ${estado}`;
+    await notificacionController.crearNotificacionParaManicure(
+      id,
+      mensaje,
+      horario.manicureidusuario
+    );
+  }
 };
 
 export const eliminarReservacion = async (id: number) => {
-  const reservacion = await Reservacion.destroy({ where: { id } });
-  return reservacion;
+  // Obtener la reservación antes de eliminarla para enviar notificación
+  const reservacion = await Reservacion.findByPk(id, {
+    include: [{ model: Horario, as: "horario" }],
+  });
+
+  if (reservacion) {
+    const horario = await Horario.findByPk(reservacion.horarioid);
+    if (horario) {
+      // Enviar notificación a la manicure
+      const fechaFormateada = new Date(reservacion.fecha).toLocaleDateString('es-ES');
+      const mensaje = `Reservación #${id} cancelada para el ${fechaFormateada}`;
+      await notificacionController.crearNotificacionParaManicure(
+        id,
+        mensaje,
+        horario.manicureidusuario
+      );
+    }
+  }
+
+  const deleted = await Reservacion.destroy({ where: { id } });
+  return deleted;
 };
 
 export const obtenerReservacionesPorCliente = async (
@@ -159,6 +205,12 @@ export const cambiarEstadoReservacion = async (
   nuevoEstado: "pendiente" | "confirmada" | "completada" | "cancelada",
   precio?: number
 ) => {
+  // Obtener la reservación antes de actualizar para enviar notificación al cliente
+  const reservacion = await Reservacion.findByPk(id);
+  if (!reservacion) {
+    throw new AppError("Reservación no encontrada");
+  }
+
   // Crear objeto con los datos a actualizar
   const updateData: any = {
     estado: nuevoEstado.toLowerCase(),
@@ -186,4 +238,21 @@ export const cambiarEstadoReservacion = async (
   if (updated === 0) {
     throw new AppError("Reservación no encontrada");
   }
+
+  // Enviar notificación al cliente sobre el cambio de estado
+  const estadoTexto = {
+    pendiente: "pendiente",
+    confirmada: "confirmada",
+    completada: "completada",
+    cancelada: "cancelada"
+  }[nuevoEstado.toLowerCase()] || nuevoEstado;
+
+  const fechaFormateada = new Date(reservacion.fecha).toLocaleDateString('es-ES');
+  const mensaje = `El estado de tu reservación #${id} del ${fechaFormateada} ha cambiado a: ${estadoTexto}`;
+  
+  await notificacionController.crearNotificacionParaCliente(
+    id,
+    mensaje,
+    reservacion.clienteidusuario
+  );
 };

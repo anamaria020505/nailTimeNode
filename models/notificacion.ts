@@ -6,8 +6,8 @@ interface NotificacionAtributos{
   mensaje: string;
   reservacionid: number;
   leido: boolean;
-  manicureidusuario: string;
-  clienteidusuario: string;
+  manicureidusuario: string | null;
+  clienteidusuario: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -19,8 +19,8 @@ class Notificacion extends Model<NotificacionAtributos, NotificacionCreationAttr
   public mensaje!: string;
   public reservacionid!: number;
   public leido!: boolean;
-  public manicureidusuario!: string;
-  public clienteidusuario!: string;
+  public manicureidusuario!: string | null;
+  public clienteidusuario!: string | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -51,7 +51,7 @@ Notificacion.init(
     },
     manicureidusuario: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'manicure',
         key: 'idusuario'
@@ -59,7 +59,7 @@ Notificacion.init(
     },
     clienteidusuario: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'cliente',
         key: 'idusuario'

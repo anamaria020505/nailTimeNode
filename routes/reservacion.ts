@@ -56,6 +56,7 @@ router.post("/", async (req, res, next) => {
 
     res.status(201).json(reservacion);
   } catch (error: any) {
+    console.log(error);
     if (
       error.parent?.detail?.includes("reservacion") &&
       error.parent?.code === "23505"
