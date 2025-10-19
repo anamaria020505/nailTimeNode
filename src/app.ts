@@ -7,6 +7,7 @@ import "../models";
 
 import usuarioRoutes from "../routes/usuario";
 import servicioRoutes from "../routes/servicio";
+import horarioRoutes from "../routes/horario";
 
 const errorHandler = require("../middlewares/errorHandler.js");
 
@@ -27,6 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/usuarios", usuarioRoutes);
 app.use("/servicios", servicioRoutes);
+app.use("/horario", horarioRoutes);
 
 app.use(errorHandler);
 

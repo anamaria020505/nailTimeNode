@@ -24,3 +24,22 @@
 2025-10-18T02:56:10.779Z [ERROR]: Error: 500 - GET /servicios/1/5 - error - missing FROM-clause entry for table "manicure->usuario" - IP: ::1
 2025-10-18T03:09:30.037Z [ERROR]: Error: 404 - DELETE /servicios/2 - fail - Servicio no encontrado - IP: ::1
 2025-10-18T03:09:35.883Z [ERROR]: Error: 404 - GET /servicios/2 - fail - Servicio no encontrado - IP: ::1
+2025-10-18T15:48:04.884Z [ERROR]: Error: 400 - POST /horario - fail - El horario se solapa con un horario existente - IP: ::1
+2025-10-18T15:49:23.932Z [ERROR]: Error: 500 - PUT /horario/1 - error - insert or update on table "horario" violates foreign key constraint "horario_manicureidusuario_fkey" - IP: ::1
+2025-10-18T15:49:44.551Z [ERROR]: Error: 400 - POST /horario/ - fail - La manicure especificada no existe - IP: ::1
+2025-10-18T15:50:30.243Z [ERROR]: Error: 400 - POST /horario/ - fail - La manicure especificada no existe - IP: ::1
+2025-10-18T15:51:13.956Z [ERROR]: Error: 400 - POST /horario/ - fail - La manicure especificada no existe - IP: ::1
+2025-10-18T15:51:23.370Z [ERROR]: Error: 400 - PUT /horario/1 - fail - La manicure especificada no existe - IP: ::1
+2025-10-18T16:07:45.126Z [ERROR]: Error: 500 - GET /reservacion - error - Usuario is not associated to Horario! - IP: ::1
+2025-10-19T02:05:24.561Z [ERROR]: Error: 400 - POST /reservacion - fail - Todos los campos obligatorios son requeridos - IP: ::1
+2025-10-19T02:05:31.388Z [ERROR]: Error: 400 - POST /reservacion - fail - Formato de fecha inválido. Use YYYY-MM-DD - IP: ::1
+2025-10-19T02:06:12.849Z [ERROR]: Error: 400 - POST /reservacion - fail - Formato de fecha inválido. Use YYYY-MM-DD - IP: ::1
+2025-10-19T02:06:24.653Z [ERROR]: Error: 400 - POST /reservacion - fail - El cliente especificado no existe - IP: ::1
+2025-10-19T02:06:37.343Z [ERROR]: Error: 400 - POST /reservacion - fail - El servicio especificado no existe - IP: ::1
+2025-10-19T02:10:35.364Z [ERROR]: Error: 404 - PUT /reservacion/1 - fail - Reservación no encontrada - IP: ::1
+2025-10-19T02:11:15.516Z [ERROR]: Error: 500 - PUT /reservacion/pendiente - error - column "nan" does not exist - IP: ::1
+2025-10-19T02:11:27.453Z [ERROR]: Error: 500 - GET /reservacion - error - Usuario is not associated to Horario! - IP: ::1
+2025-10-19T02:12:41.590Z [ERROR]: Error: 500 - GET /reservacion - error - Usuario is not associated to Horario! - IP: ::1
+2025-10-19T02:17:04.274Z [ERROR]: Error: 500 - GET /reservacion - error - Usuario is not associated to Horario! - IP: ::1
+2025-10-19T02:17:54.545Z [ERROR]: Error: 500 - GET /reservacion - error - Usuario is not associated to Horario! - IP: ::1
+2025-10-19T02:18:31.703Z [ERROR]: Error: 500 - GET /reservacion - error - Usuario is not associated to Horario! - IP: ::1
