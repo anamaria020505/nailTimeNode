@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import path from "path";
 import sequelize, { testConnection } from "../config/database";
 import "../models";
 
@@ -10,6 +11,7 @@ import servicioRoutes from "../routes/servicio";
 import horarioRoutes from "../routes/horario";
 import reservacionRoutes from "../routes/reservacion";
 import notificacionRoutes from "../routes/notificacion";
+import disennoRoutes from "../routes/disenno";
 
 const errorHandler = require("../middlewares/errorHandler.js");
 
@@ -26,6 +28,9 @@ app.use(morgan("combined"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Servir archivos estáticos (imágenes)
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 // Routes
 
 app.use("/usuarios", usuarioRoutes);
@@ -33,6 +38,7 @@ app.use("/servicios", servicioRoutes);
 app.use("/horario", horarioRoutes);
 app.use("/reservacion", reservacionRoutes);
 app.use("/notificacion", notificacionRoutes);
+app.use("/disenios", disennoRoutes);
 
 app.use(errorHandler);
 
