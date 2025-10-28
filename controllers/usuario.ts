@@ -1,6 +1,8 @@
 import Usuario from "../models/usuario";
 import Cliente from "../models/cliente";
 import Manicure from "../models/manicure";
+import { deleteFile } from "../config/multer";
+import path from "path";
 const AppError = require("../errors/AppError");
 
 export const obtenerUsuariosPaginated = async (
@@ -63,12 +65,18 @@ export const crearUsuario = async (
     telefono: string;
   },
   manicure?: {
+    foto?: string;
     direccion: string;
     provincia: string;
     municipio: string;
     telefono: string;
   }
 ) => {
+
+  console.log(usuario)
+  console.log(rol)
+  console.log(manicure)
+
   // Create the user first
   const user = await Usuario.create({
     usuario,
@@ -86,6 +94,7 @@ export const crearUsuario = async (
   } else if (rol === "manicure" && manicure) {
     await Manicure.create({
       idusuario: usuario,
+      foto: manicure.foto,
       direccion: manicure.direccion,
       provincia: manicure.provincia,
       municipio: manicure.municipio,
@@ -108,6 +117,7 @@ export const actualizarUsuario = async (
     telefono: string;
   },
   manicure?: {
+    foto?: string;
     direccion: string;
     provincia: string;
     municipio: string;
@@ -143,6 +153,12 @@ export const actualizarUsuario = async (
     if (rolAnterior === "cliente") {
       await Cliente.destroy({ where: { idusuario: usuarioU } });
     } else if (rolAnterior === "manicure") {
+      // Eliminar foto si existe antes de eliminar el registro
+      const manicureAnterior = await Manicure.findByPk(usuarioU);
+      if (manicureAnterior?.foto) {
+        const filePath = path.join(__dirname, "../uploads", manicureAnterior.foto);
+        deleteFile(filePath);
+      }
       await Manicure.destroy({ where: { idusuario: usuarioU } });
     }
   }
@@ -159,9 +175,19 @@ export const actualizarUsuario = async (
       }
     );
   } else if (rol === "manicure" && manicure) {
+    // Si se proporciona una nueva foto, eliminar la anterior
+    if (manicure.foto) {
+      const manicureExistente = await Manicure.findByPk(usuarioU);
+      if (manicureExistente?.foto && manicureExistente.foto !== manicure.foto) {
+        const oldFilePath = path.join(__dirname, "../uploads", manicureExistente.foto);
+        deleteFile(oldFilePath);
+      }
+    }
+
     await Manicure.upsert(
       {
         idusuario: usuario,
+        foto: manicure.foto,
         direccion: manicure.direccion,
         provincia: manicure.provincia,
         municipio: manicure.municipio,
@@ -175,6 +201,19 @@ export const actualizarUsuario = async (
 };
 
 export const eliminarUsuario = async (usuario: string) => {
-  const user = await Usuario.destroy({ where: { usuario } });
-  return user;
+  // Verificar si es manicure y tiene foto para eliminarla
+  const user = await Usuario.findByPk(usuario, {
+    include: [{ model: Manicure, as: "manicure", required: false }],
+  });
+
+  if (user) {
+    const manicure = await Manicure.findByPk(usuario);
+    if (manicure?.foto) {
+      const filePath = path.join(__dirname, "../uploads", manicure.foto);
+      deleteFile(filePath);
+    }
+  }
+
+  const result = await Usuario.destroy({ where: { usuario } });
+  return result;
 };

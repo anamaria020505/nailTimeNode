@@ -48,60 +48,10 @@ router.post("/", uploadDisenio.single("imagen"), async (req, res, next) => {
   }
 });
 
-// Obtener imagen por URL
-router.get("/imagen", async (req, res, next) => {
-  try {
-    const { url } = req.query;
-
-    if (!url || typeof url !== "string") {
-      throw new AppError("La URL de la imagen es requerida", 400);
-    }
-
-    // Construir la ruta completa del archivo (agregar 'uploads' al inicio)
-    const filePath = path.join(__dirname, "../uploads", url);
-
-    // Verificar que el archivo existe
-    if (!fs.existsSync(filePath)) {
-      throw new AppError("Imagen no encontrada", 404);
-    }
-
-    // Verificar que la ruta está dentro del directorio uploads (seguridad)
-    const uploadsDir = path.join(__dirname, "../uploads");
-    const resolvedPath = path.resolve(filePath);
-    const resolvedUploadsDir = path.resolve(uploadsDir);
-
-    if (!resolvedPath.startsWith(resolvedUploadsDir)) {
-      throw new AppError("Acceso no autorizado", 403);
-    }
-
-    // Enviar el archivo
-    res.sendFile(resolvedPath);
-  } catch (error) {
-    next(error);
-  }
-});
-
 // Obtener todos los diseños
 router.get("/", async (req, res, next) => {
   try {
     const disenios = await obtenerDisennos();
-    res.status(200).json(disenios);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Obtener diseños con paginación
-router.get("/paginated/:page/:limit", async (req, res, next) => {
-  try {
-    const page = parseInt(req.params.page);
-    const limit = parseInt(req.params.limit);
-
-    if (page < 1 || limit < 1) {
-      throw new AppError("Parámetros de paginación inválidos", 400);
-    }
-
-    const disenios = await obtenerDisennosPaginated(page, limit);
     res.status(200).json(disenios);
   } catch (error) {
     next(error);
@@ -118,6 +68,23 @@ router.get("/manicure/:manicureidusuario", async (req, res, next) => {
     }
 
     const disenios = await obtenerDisennosPorManicure(manicureidusuario);
+    res.status(200).json(disenios);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Obtener diseños con paginación
+router.get("/:page/:limit", async (req, res, next) => {
+  try {
+    const page = parseInt(req.params.page);
+    const limit = parseInt(req.params.limit);
+
+    if (page < 1 || limit < 1) {
+      throw new AppError("Parámetros de paginación inválidos", 400);
+    }
+
+    const disenios = await obtenerDisennosPaginated(page, limit);
     res.status(200).json(disenios);
   } catch (error) {
     next(error);

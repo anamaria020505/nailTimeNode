@@ -12,6 +12,7 @@ import horarioRoutes from "../routes/horario";
 import reservacionRoutes from "../routes/reservacion";
 import notificacionRoutes from "../routes/notificacion";
 import disennoRoutes from "../routes/disenno";
+import imagenesRoutes from "../routes/imagenes";
 
 const errorHandler = require("../middlewares/errorHandler.js");
 
@@ -39,6 +40,7 @@ app.use("/horario", horarioRoutes);
 app.use("/reservacion", reservacionRoutes);
 app.use("/notificacion", notificacionRoutes);
 app.use("/disenios", disennoRoutes);
+app.use("/imagen", imagenesRoutes);
 
 app.use(errorHandler);
 

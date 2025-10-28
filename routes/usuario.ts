@@ -7,6 +7,7 @@ import {
   eliminarUsuario,
   actualizarUsuario,
 } from "../controllers/usuario";
+import { uploadManicure } from "../config/multer";
 const AppError = require("../errors/AppError");
 const { hashPassword } = require("../utils/hashPass");
 
@@ -16,11 +17,12 @@ const router = Router();
 
 // Rutas CRUD para usuarios (protegidas)
 
-router.post("/", async (req, res, next) => {
+router.post("/", uploadManicure.single("foto"), async (req, res, next) => {
   try {
     const { usuario, nombre, contrasena, rol } = req.body;
     const cliente: { telefono: string } = req.body.cliente;
     const manicure: {
+      foto?: string;
       direccion: string;
       provincia: string;
       municipio: string;
@@ -36,6 +38,11 @@ router.post("/", async (req, res, next) => {
 
     const hashedPassword = await hashPassword(contrasena);
 
+    // Si es manicure y se subió una foto, agregar la ruta
+    if (rol === "manicure" && req.file && manicure) {
+      manicure.foto = `manicures/${req.file.filename}`;
+    }
+
     let user = await crearUsuario(
       usuario,
       nombre,
@@ -47,6 +54,16 @@ router.post("/", async (req, res, next) => {
 
     res.status(201).json(user);
   } catch (error: any) {
+    // Si hay error y se subió un archivo, eliminarlo
+    if (req.file) {
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.join(__dirname, "../", req.file.path);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    }
+
     if (
       error.parent?.detail?.includes("usuario") &&
       error.parent?.code === "23505"
@@ -99,52 +116,74 @@ router.get("/:page/:limit", async (req, res, next) => {
   }
 });
 
-router.put("/:usuarioU", async (req, res, next) => {
-  try {
-    const { usuarioU } = req.params;
-    const { usuario, nombre, contrasena, rol } = req.body;
-    const cliente: { telefono: string } = req.body.cliente;
-    const manicure: {
-      direccion: string;
-      provincia: string;
-      municipio: string;
-      telefono: string;
-    } = req.body.manicure;
+router.put(
+  "/:usuarioU",
+  uploadManicure.single("foto"),
+  async (req, res, next) => {
+    try {
+      const { usuarioU } = req.params;
+      const { usuario, nombre, contrasena, rol } = req.body;
+      const cliente: { telefono: string } = req.body.cliente;
+      const manicure: {
+        foto?: string;
+        direccion: string;
+        provincia: string;
+        municipio: string;
+        telefono: string;
+      } = req.body.manicure;
 
-    if (!usuarioU) {
-      return res
-        .status(400)
-        .json({ message: "Usuario a actualizar es requerido" });
-    }
+      if (!usuarioU) {
+        return res
+          .status(400)
+          .json({ message: "Usuario a actualizar es requerido" });
+      }
 
-    if (!usuario || !nombre || !rol) {
-      throw new AppError("Usuario,nombre y rol son requeridos", 400);
-    }
+      if (!usuario || !nombre || !rol) {
+        throw new AppError("Usuario,nombre y rol son requeridos", 400);
+      }
 
-    const hashedPassword = contrasena
-      ? await hashPassword(contrasena)
-      : undefined;
-    let user = await actualizarUsuario(
-      usuarioU,
-      usuario,
-      nombre,
-      hashedPassword,
-      rol,
-      cliente,
-      manicure
-    );
-    res.status(200).json({ message: "Usuario actualizado" });
-  } catch (error: any) {
-    console.log(error);
-    if (
-      error.parent?.detail?.includes("usuario") &&
-      error.parent?.code === "23505"
-    ) {
-      return next(new AppError("El usuario ya existe", 400));
+      const hashedPassword = contrasena
+        ? await hashPassword(contrasena)
+        : undefined;
+
+      // Si es manicure y se subió una foto, agregar la ruta
+      if (rol === "manicure" && req.file && manicure) {
+        manicure.foto = `manicures/${req.file.filename}`;
+      }
+
+      let user = await actualizarUsuario(
+        usuarioU,
+        usuario,
+        nombre,
+        hashedPassword,
+        rol,
+        cliente,
+        manicure
+      );
+      res.status(200).json({ message: "Usuario actualizado" });
+    } catch (error: any) {
+      console.log(error);
+
+      // Si hay error y se subió un archivo, eliminarlo
+      if (req.file) {
+        const fs = require("fs");
+        const path = require("path");
+        const filePath = path.join(__dirname, "../", req.file.path);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      }
+
+      if (
+        error.parent?.detail?.includes("usuario") &&
+        error.parent?.code === "23505"
+      ) {
+        return next(new AppError("El usuario ya existe", 400));
+      }
+      next(error);
     }
-    next(error);
   }
-});
+);
 
 router.delete("/:usuario", async (req, res, next) => {
   try {
