@@ -12,11 +12,11 @@ import { uploadDisenio } from "../config/multer";
 import path from "path";
 import fs from "fs";
 const AppError = require("../errors/AppError");
-
+const authenticate = require("../middlewares/autenticarse");
 const router = Router();
 
 // Crear un nuevo diseño con imagen
-router.post("/", uploadDisenio.single("imagen"), async (req, res, next) => {
+router.post("/", authenticate(["manicure"]),  uploadDisenio.single("imagen"), async (req, res, next) => {
   try {
     const { manicureidusuario } = req.body;
 
@@ -49,7 +49,7 @@ router.post("/", uploadDisenio.single("imagen"), async (req, res, next) => {
 });
 
 // Obtener todos los diseños
-router.get("/", async (req, res, next) => {
+router.get("/", authenticate(["manicure","cliente"]),  async (req, res, next) => {
   try {
     const disenios = await obtenerDisennos();
     res.status(200).json(disenios);
@@ -59,7 +59,7 @@ router.get("/", async (req, res, next) => {
 });
 
 // Obtener diseños por manicure
-router.get("/manicure/:manicureidusuario", async (req, res, next) => {
+router.get("/manicure/:manicureidusuario", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { manicureidusuario } = req.params;
 
@@ -75,7 +75,7 @@ router.get("/manicure/:manicureidusuario", async (req, res, next) => {
 });
 
 // Obtener diseños con paginación
-router.get("/:page/:limit", async (req, res, next) => {
+router.get("/:page/:limit", authenticate(["manicure","cliente"]),  async (req, res, next) => {
   try {
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
@@ -92,7 +92,7 @@ router.get("/:page/:limit", async (req, res, next) => {
 });
 
 // Obtener un diseño por ID
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", authenticate(["manicure","cliente"]),  async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
 
@@ -113,7 +113,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // Actualizar un diseño
-router.put("/:id", uploadDisenio.single("imagen"), async (req, res, next) => {
+router.put("/:id", authenticate(["manicure"]),  uploadDisenio.single("imagen"), async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
     const { manicureidusuario } = req.body;
@@ -146,7 +146,7 @@ router.put("/:id", uploadDisenio.single("imagen"), async (req, res, next) => {
 });
 
 // Eliminar un diseño
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
 

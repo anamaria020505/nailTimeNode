@@ -3,7 +3,9 @@ import Cliente from "../models/cliente";
 import Manicure from "../models/manicure";
 import { deleteFile } from "../config/multer";
 import path from "path";
+import jwt from "jsonwebtoken";
 const AppError = require("../errors/AppError");
+const { comparePassword } = require("../utils/hashPass");
 
 export const obtenerUsuariosPaginated = async (
   page: number,
@@ -198,6 +200,44 @@ export const actualizarUsuario = async (
       }
     );
   }
+};
+
+export const login = async (usuario: string, contrasena: string) => {
+  const user = await Usuario.findByPk(usuario, {
+    include: [
+      { model: Cliente, as: "cliente", required: false },
+      { model: Manicure, as: "manicure", required: false },
+    ],
+  });
+
+  if (!user) {
+    throw new AppError("Usuario o contraseña incorrectos", 401);
+  }
+
+  const isMatch = await comparePassword(contrasena, user.contrasena);
+  
+  if (!isMatch) {
+    throw new AppError("Usuario o contraseña incorrectos", 401);
+  }
+
+  // Create token
+  const token = jwt.sign(
+    { 
+      usuario: user.usuario, 
+      role: user.rol 
+    },
+    process.env.JWT_SECRET || 'your-secret-key',
+    { expiresIn: '24h' }
+  );
+
+  // Remove password from user object
+  const userWithoutPassword = user.get({ plain: true }) as any; // Using type assertion here
+  delete userWithoutPassword.contrasena;
+
+  return {
+    user: userWithoutPassword,
+    token
+  };
 };
 
 export const eliminarUsuario = async (usuario: string) => {

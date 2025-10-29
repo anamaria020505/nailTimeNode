@@ -2,11 +2,11 @@ import { Router } from "express";
 import path from "path";
 import fs from "fs";
 const AppError = require("../errors/AppError");
-
+const authenticate = require("../middlewares/autenticarse");
 const router = Router();
 
 // Obtener imagen por URL
-router.get("/", async (req, res, next) => {
+router.get("/", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { url } = req.query;
 

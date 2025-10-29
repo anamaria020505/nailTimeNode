@@ -9,13 +9,13 @@ import {
   obtenerHorariosPaginated,
 } from "../controllers/horario";
 const AppError = require("../errors/AppError");
-
+const authenticate = require("../middlewares/autenticarse");
 const router = Router();
 
 // Obtener todos los horarios (paginados)
 
 // Obtener todos los horarios
-router.get("/", async (req, res, next) => {
+router.get("/", authenticate(["manicure","cliente"]),  async (req, res, next) => {
   try {
     const horarios = await obtenerHorarios();
     res.status(200).json(horarios);
@@ -24,7 +24,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.get("/:page/:limit", async (req, res, next) => {
+router.get("/:page/:limit", authenticate(["manicure","cliente"]),  async (req, res, next) => {
   try {
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
@@ -41,7 +41,7 @@ router.get("/:page/:limit", async (req, res, next) => {
 });
 
 // Obtener horarios por manicure
-router.get("/manicure/:manicureId", async (req, res, next) => {
+router.get("/manicure/:manicureId", authenticate(["manicure","cliente"]),  async (req, res, next) => {
   try {
     const { manicureId } = req.params;
     const horarios = await obtenerHorariosPorManicure(manicureId);
@@ -52,7 +52,7 @@ router.get("/manicure/:manicureId", async (req, res, next) => {
 });
 
 // Obtener un horario por ID
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
     const horario = await obtenerHorarioPorId(parseInt(id));
@@ -68,7 +68,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // Crear un nuevo horario
-router.post("/", async (req, res, next) => {
+router.post("/", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { horaInicio, horaFinal, manicureId } = req.body;
 
@@ -90,7 +90,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // Actualizar un horario existente
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
     const { horaInicio, horaFinal, manicureId } = req.body;
@@ -119,7 +119,7 @@ router.put("/:id", async (req, res, next) => {
 });
 
 // Eliminar un horario
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
     await eliminarHorario(parseInt(id));

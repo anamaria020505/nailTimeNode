@@ -6,18 +6,34 @@ import {
   obtenerUsuarios,
   eliminarUsuario,
   actualizarUsuario,
+  login,
 } from "../controllers/usuario";
 import { uploadManicure } from "../config/multer";
 const AppError = require("../errors/AppError");
 const { hashPassword } = require("../utils/hashPass");
+const authenticate = require("../middlewares/autenticarse");
 
 const router = Router();
 
 // Rutas públicas (autenticación)
+router.post("/login",  async (req, res, next) => {
+  try {
+    const { usuario, contrasena } = req.body;
+    
+    if (!usuario || !contrasena) {
+      throw new AppError("Usuario y contraseña son requeridos", 400);
+    }
 
-// Rutas CRUD para usuarios (protegidas)
+    const result = await login(usuario, contrasena);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
 
-router.post("/", uploadManicure.single("foto"), async (req, res, next) => {
+
+
+router.post("/", authenticate(["admin"]),uploadManicure.single("foto"), async (req, res, next) => {
   try {
     const { usuario, nombre, contrasena, rol } = req.body;
     const cliente: { telefono: string } = req.body.cliente;
@@ -75,7 +91,7 @@ router.post("/", uploadManicure.single("foto"), async (req, res, next) => {
   }
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", authenticate(["admin"]), async (req, res, next) => {
   try {
     const user = await obtenerUsuarios();
 
@@ -85,7 +101,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.get("/:usuario", async (req, res, next) => {
+router.get("/:usuario", authenticate(["admin"]),  async (req, res, next) => {
   try {
     const { usuario } = req.params;
     const user = await obtenerUsuarioPorUsuario(usuario);
@@ -100,7 +116,7 @@ router.get("/:usuario", async (req, res, next) => {
   }
 });
 
-router.get("/:page/:limit", async (req, res, next) => {
+router.get("/:page/:limit", authenticate(["admin"]),  async (req, res, next) => {
   try {
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
@@ -117,7 +133,7 @@ router.get("/:page/:limit", async (req, res, next) => {
 });
 
 router.put(
-  "/:usuarioU",
+  "/:usuarioU", authenticate(["admin"]), 
   uploadManicure.single("foto"),
   async (req, res, next) => {
     try {
@@ -185,7 +201,7 @@ router.put(
   }
 );
 
-router.delete("/:usuario", async (req, res, next) => {
+router.delete("/:usuario", authenticate(["admin"]),  async (req, res, next) => {
   try {
     const { usuario } = req.params;
     if (!usuario) {

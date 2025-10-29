@@ -1,12 +1,12 @@
 import { Router, Request, Response } from "express";
 import * as notificacionController from "../controllers/notificacion";
 const logger = require("../loggers/logger");
-
+const authenticate = require("../middlewares/autenticarse");
 const router = Router();
 
 // Obtener todas las notificaciones de un usuario según su rol
 // Query params: rol (cliente | manicure), soloNoLeidas (true | false)
-router.get("/:idusuario", async (req: Request, res: Response) => {
+router.get("/:idusuario", authenticate(["cliente","manicure"]),  async (req: Request, res: Response) => {
   try {
     const { idusuario } = req.params;
     const { rol, soloNoLeidas } = req.query;
@@ -41,7 +41,7 @@ router.get("/:idusuario", async (req: Request, res: Response) => {
 
 // Contar notificaciones no leídas de un usuario según su rol
 // Query params: rol (cliente | manicure)
-router.get("/:idusuario/count", async (req: Request, res: Response) => {
+router.get("/:idusuario/count", authenticate(["cliente","manicure"]),  async (req: Request, res: Response) => {
   try {
     const { idusuario } = req.params;
     const { rol } = req.query;
@@ -74,7 +74,7 @@ router.get("/:idusuario/count", async (req: Request, res: Response) => {
 });
 
 // Marcar una notificación específica como leída
-router.patch("/:id/leida", async (req: Request, res: Response) => {
+router.patch("/:id/leida", authenticate(["cliente","manicure"]),  async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const notificacion =
@@ -98,7 +98,7 @@ router.patch("/:id/leida", async (req: Request, res: Response) => {
 // Query params: rol (cliente | manicure)
 router.patch(
   "/:idusuario/marcar-todas-leidas",
-  async (req: Request, res: Response) => {
+  authenticate(["cliente","manicure"]),  async (req: Request, res: Response) => {
     try {
       const { idusuario } = req.params;
       const { rol } = req.query;
@@ -136,7 +136,7 @@ router.patch(
 );
 
 // Eliminar una notificación
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", authenticate(["cliente","manicure"]),  async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const result = await notificacionController.eliminarNotificacion(

@@ -11,12 +11,12 @@ import {
   cambiarEstadoReservacion,
 } from "../controllers/reservacion";
 const AppError = require("../errors/AppError");
-
+const authenticate = require("../middlewares/autenticarse");
 const router = Router();
 
 // Rutas CRUD para reservaciones
 
-router.post("/", async (req, res, next) => {
+router.post("/", authenticate(["cliente"]),  async (req, res, next) => {
   try {
     const {
       disenno,
@@ -68,7 +68,7 @@ router.post("/", async (req, res, next) => {
   }
 });
 
-router.get("/", async (req, res, next) => {
+router.get("/", authenticate(["cliente","manicure"]),  async (req, res, next) => {
   try {
     const reservaciones = await obtenerReservaciones();
 
@@ -78,7 +78,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", authenticate(["cliente","manicure"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
     const reservacion = await obtenerReservacionPorId(parseInt(id));
@@ -93,23 +93,9 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-router.get("/:page/:limit", async (req, res, next) => {
-  try {
-    const page = parseInt(req.params.page);
-    const limit = parseInt(req.params.limit);
 
-    if (page < 1 || limit < 1) {
-      throw new AppError("Parámetros de paginación inválidos", 400);
-    }
 
-    const reservaciones = await obtenerReservacionesPaginated(page, limit);
-    res.status(200).json(reservaciones);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", authenticate(["cliente"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
     const {
@@ -156,7 +142,7 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -177,7 +163,7 @@ router.delete("/:id", async (req, res, next) => {
 
 // Rutas adicionales para consultas específicas
 
-router.get("/cliente/:clienteidusuario", async (req, res, next) => {
+router.get("/cliente/:clienteidusuario", authenticate(["cliente"]),  async (req, res, next) => {
   try {
     const { clienteidusuario } = req.params;
     const reservaciones = await obtenerReservacionesPorCliente(
@@ -190,7 +176,7 @@ router.get("/cliente/:clienteidusuario", async (req, res, next) => {
   }
 });
 
-router.get("/estado/:estado", async (req, res, next) => {
+router.get("/estado/:estado",  authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { estado } = req.params;
     const reservaciones = await obtenerReservacionesPorEstado(estado);
@@ -200,9 +186,24 @@ router.get("/estado/:estado", async (req, res, next) => {
     next(error);
   }
 });
+router.get("/:page/:limit", authenticate(["cliente","manicure"]),  async (req, res, next) => {
+  try {
+    const page = parseInt(req.params.page);
+    const limit = parseInt(req.params.limit);
+
+    if (page < 1 || limit < 1) {
+      throw new AppError("Parámetros de paginación inválidos", 400);
+    }
+
+    const reservaciones = await obtenerReservacionesPaginated(page, limit);
+    res.status(200).json(reservaciones);
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Ruta para cambiar el estado de una reservación específica
-router.patch("/:id/estado", async (req, res, next) => {
+router.patch("/:id/estado", authenticate(["cliente"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
     const { estado, precio } = req.body;

@@ -7,14 +7,15 @@ import {
   obtenerServiciosPorManicure,
   eliminarServicio,
   actualizarServicio,
+  
 } from "../controllers/servicio";
 
 const AppError = require("../errors/AppError");
-
+const authenticate = require("../middlewares/autenticarse");
 const router = Router();
 
 // Obtener servicios por manicureid
-router.get("/manicure/:manicureid", async (req, res, next) => {
+router.get("/manicure/:manicureid",  authenticate(["manicure","cliente"]), async (req, res, next) => {
   try {
     const manicureid = req.params.manicureid;
     if (!manicureid) {
@@ -30,7 +31,7 @@ router.get("/manicure/:manicureid", async (req, res, next) => {
 });
 
 // Obtener todos los servicios con paginación
-router.get("/:page/:limit", async (req, res, next) => {
+router.get("/:page/:limit", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
@@ -48,7 +49,7 @@ router.get("/:page/:limit", async (req, res, next) => {
 });
 
 // Obtener todos los servicios
-router.get("/", async (req, res, next) => {
+router.get("/",  authenticate(["manicure"]), async (req, res, next) => {
   try {
     const servicios = await obtenerServicios();
     res.status(200).json(servicios);
@@ -58,7 +59,7 @@ router.get("/", async (req, res, next) => {
 });
 
 // Obtener un servicio por ID
-router.get("/:id", async (req, res, next) => {
+router.get("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
@@ -78,7 +79,7 @@ router.get("/:id", async (req, res, next) => {
 });
 
 // Crear un nuevo servicio
-router.post("/", async (req, res, next) => {
+router.post("/", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { nombre, manicureidusuario, disponible } = req.body;
 
@@ -104,7 +105,7 @@ router.post("/", async (req, res, next) => {
 });
 
 // Actualizar un servicio
-router.put("/:id", async (req, res, next) => {
+router.put("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
@@ -131,7 +132,7 @@ router.put("/:id", async (req, res, next) => {
 });
 
 // Eliminar un servicio
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
