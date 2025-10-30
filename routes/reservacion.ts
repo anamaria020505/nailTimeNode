@@ -9,6 +9,7 @@ import {
   obtenerReservacionesPorCliente,
   obtenerReservacionesPorEstado,
   cambiarEstadoReservacion,
+  obtenerReservacionesDeHoyPorManicure,
 } from "../controllers/reservacion";
 const AppError = require("../errors/AppError");
 const authenticate = require("../middlewares/autenticarse");
@@ -72,6 +73,19 @@ router.get("/", authenticate(["cliente","manicure"]),  async (req, res, next) =>
   try {
     const reservaciones = await obtenerReservaciones();
 
+    res.status(200).json(reservaciones);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/hoy", authenticate(["manicure"]), async (req: any, res, next) => {
+  try {
+    const manicureidusuario = req.userData?.usuario;
+    if (!manicureidusuario) {
+      throw new AppError("No se pudo identificar la manicure", 401);
+    }
+    const reservaciones = await obtenerReservacionesDeHoyPorManicure(manicureidusuario);
     res.status(200).json(reservaciones);
   } catch (error) {
     next(error);

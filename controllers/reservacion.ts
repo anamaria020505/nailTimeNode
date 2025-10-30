@@ -4,6 +4,7 @@ import Horario from "../models/horario";
 import Servicio from "../models/servicio";
 import * as notificacionController from "./notificacion";
 const AppError = require("../errors/AppError");
+import { Op } from "sequelize";
 
 export const obtenerReservacionesPaginated = async (
   page: number,
@@ -255,4 +256,35 @@ export const cambiarEstadoReservacion = async (
     mensaje,
     reservacion.clienteidusuario
   );
+};
+
+// Obtener reservaciones de hoy por manicure
+export const obtenerReservacionesDeHoyPorManicure = async (
+  manicureidusuario: string
+) => {
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, "0");
+  const dd = String(hoy.getDate()).padStart(2, "0");
+  const hoyStr = `${yyyy}-${mm}-${dd}`; // Reservacion.fecha es DATEONLY (YYYY-MM-DD)
+
+  const { count, rows } = await Reservacion.findAndCountAll({
+    where: { fecha: hoyStr },
+    include: [
+      { model: Cliente, as: "cliente", required: false },
+      {
+        model: Horario,
+        as: "horario",
+        required: true,
+        where: { manicureidusuario },
+      },
+      { model: Servicio, as: "servicio", required: false },
+    ],
+    order: [["fecha", "ASC"]],
+  });
+
+  return {
+    count,
+    rows,
+  };
 };
