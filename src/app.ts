@@ -13,6 +13,7 @@ import reservacionRoutes from "../routes/reservacion";
 import notificacionRoutes from "../routes/notificacion";
 import disennoRoutes from "../routes/disenno";
 import imagenesRoutes from "../routes/imagenes";
+import estadisticasRoutes from "../routes/estadisticas";
 
 const errorHandler = require("../middlewares/errorHandler.js");
 
@@ -41,6 +42,7 @@ app.use("/reservacion", reservacionRoutes);
 app.use("/notificacion", notificacionRoutes);
 app.use("/disenios", disennoRoutes);
 app.use("/imagen", imagenesRoutes);
+app.use("/estadisticas", estadisticasRoutes);
 
 app.use(errorHandler);
 
