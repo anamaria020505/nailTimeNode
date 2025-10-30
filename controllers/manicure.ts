@@ -219,5 +219,50 @@ export const obtenerEstadisticasPorMunicipio = async (provincia: string) => {
     municipios: typedResult,
     total: typedResult.reduce((sum, item) => sum + Number(item.total), 0)
   };
+};
 
+/**
+ * Obtiene la cantidad de nuevos usuarios de la última semana
+ * @returns Promesa con las estadísticas de nuevos usuarios
+ */
+export const obtenerNuevosUsuariosUltimaSemana = async () => {
+  const hoy = new Date();
+  const haceUnaSemana = new Date();
+  haceUnaSemana.setDate(hoy.getDate() - 7);
+
+  try {
+    const [clientes, manicures] = await Promise.all([
+      // Contar clientes nuevos de la última semana
+      Usuario.count({
+        where: {
+          createdAt: {
+            [Op.between]: [haceUnaSemana, hoy]
+          },
+          rol: 'cliente'
+        }
+      }),
+      // Contar manicuristas nuevos de la última semana
+      Usuario.count({
+        where: {
+          createdAt: {
+            [Op.between]: [haceUnaSemana, hoy]
+          },
+          rol: 'manicure'
+        }
+      })
+    ]);
+
+    return {
+      total: clientes + manicures,
+      clientes,
+      manicures,
+      periodo: {
+        inicio: haceUnaSemana.toISOString(),
+        fin: hoy.toISOString()
+      }
+    };
+  } catch (error) {
+    console.error('Error al obtener estadísticas de nuevos usuarios:', error);
+    throw error;
+  }
 };

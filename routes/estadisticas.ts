@@ -1,9 +1,10 @@
 import { Router } from "express";
-import {
-  obtenerEstadisticasPorUbicacion,
-  obtenerEstadisticasPorProvincia,
+import { 
+  obtenerEstadisticasPorUbicacion, 
+  obtenerEstadisticasPorProvincia, 
+  obtenerEstadisticasReservaciones, 
   obtenerEstadisticasPorMunicipio,
-  obtenerEstadisticasReservaciones,
+  obtenerNuevosUsuariosUltimaSemana 
 } from "../controllers/manicure";
 const AppError = require("../errors/AppError");
 const authenticate = require("../middlewares/autenticarse");
@@ -80,6 +81,25 @@ router.get(
     } catch (error) {
       console.error('Error en obtenerEstadisticasReservaciones:', error);
       next(new AppError('Error al obtener las estadísticas de reservaciones', 500));
+    }
+  }
+);
+
+// Obtener estadísticas de nuevos usuarios de la última semana
+router.get(
+  "/nuevos-usuarios",
+  authenticate(["admin"]),
+  async (req, res, next) => {
+    try {
+      const estadisticas = await obtenerNuevosUsuariosUltimaSemana();
+      
+      res.status(200).json({
+        success: true,
+        data: estadisticas
+      });
+    } catch (error) {
+      console.error('Error al obtener estadísticas de nuevos usuarios:', error);
+      next(new AppError('Error al obtener las estadísticas de nuevos usuarios', 500));
     }
   }
 );
