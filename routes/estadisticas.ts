@@ -3,6 +3,7 @@ import {
   obtenerEstadisticasPorUbicacion,
   obtenerEstadisticasPorProvincia,
   obtenerEstadisticasPorMunicipio,
+  obtenerEstadisticasReservaciones,
 } from "../controllers/manicure";
 const AppError = require("../errors/AppError");
 const authenticate = require("../middlewares/autenticarse");
@@ -57,6 +58,28 @@ router.get(
     } catch (error) {
       console.error('Error en obtenerEstadisticasPorMunicipio:', error);
       next(new AppError('Error al obtener las estadísticas por municipio', 500));
+    }
+  }
+);
+
+// Obtener estadísticas de reservaciones
+router.get(
+  "/reservaciones",
+  authenticate(["admin"]),
+  async (req, res, next) => {
+    try {
+      // Obtener el parámetro de período (opcional, por defecto es 7 días)
+      const periodo = req.query.periodo === 'mes' ? 'mes' : '7dias';
+      
+      const estadisticas = await obtenerEstadisticasReservaciones(periodo);
+      
+      res.status(200).json({
+        success: true,
+        data: estadisticas
+      });
+    } catch (error) {
+      console.error('Error en obtenerEstadisticasReservaciones:', error);
+      next(new AppError('Error al obtener las estadísticas de reservaciones', 500));
     }
   }
 );

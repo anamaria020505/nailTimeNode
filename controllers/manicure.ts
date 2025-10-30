@@ -1,7 +1,8 @@
 import { Request as ExpressRequest, Response } from "express";
 import Manicure from "../models/manicure";
 import Usuario from "../models/usuario";
-import { Op } from "sequelize";
+import { Op, fn, col, literal } from "sequelize";
+import Reservacion from "../models/reservacion";
 
 interface MunicipioStats {
   municipio: string;
@@ -108,6 +109,85 @@ export const obtenerEstadisticasPorProvincia = async () => {
  * @param provincia Nombre de la provincia para filtrar los municipios
  * @returns Promesa con las estadísticas de manicuristas por municipio de la provincia especificada
  */
+/**
+ * Obtiene estadísticas de reservaciones para los últimos 7 días o el último mes
+ * @param periodo '7dias' para los últimos 7 días, 'mes' para el último mes
+ * @returns Promesa con las estadísticas de reservaciones
+ */
+export const obtenerEstadisticasReservaciones = async (periodo: '7dias' | 'mes' = '7dias') => {
+  if (!Reservacion.sequelize) {
+    throw new Error('Sequelize instance is not available');
+  }
+
+  // Calcular las fechas de inicio según el período
+  const hoy = new Date();
+  const fechaInicio = new Date();
+  
+  if (periodo === '7dias') {
+    fechaInicio.setDate(hoy.getDate() - 7);
+  } else { // mes
+    fechaInicio.setMonth(hoy.getMonth() - 1);
+  }
+
+  // Formatear fechas para la consulta
+  const fechaInicioStr = fechaInicio.toISOString().split('T')[0];
+  const fechaFinStr = hoy.toISOString().split('T')[0];
+
+  // Definir el tipo para los resultados de la consulta
+  interface EstadisticaDia {
+    fecha: string;
+    totalReservas: string | number;
+  }
+
+  // Obtener estadísticas agrupadas por día
+  const estadisticas = await Reservacion.findAll({
+    attributes: [
+      [fn('DATE', col('fecha')), 'fecha'],
+      [fn('COUNT', col('id')), 'totalReservas']
+    ],
+    where: {
+      fecha: {
+        [Op.between]: [fechaInicio, hoy]
+      },
+      estado: 'confirmada' // Solo contar reservas confirmadas
+    },
+    group: [fn('DATE', col('fecha'))],
+    order: [[fn('DATE', col('fecha')), 'ASC']],
+    raw: true
+  }) as unknown as EstadisticaDia[];
+
+  // Procesar los resultados para incluir todos los días del período
+  const resultados: Array<{fecha: string, totalReservas: number}> = [];
+  const fechaActual = new Date(fechaInicio);
+  
+  while (fechaActual <= hoy) {
+    const fechaStr = fechaActual.toISOString().split('T')[0];
+    const estadisticaDia = estadisticas.find(e => e.fecha === fechaStr);
+    
+    resultados.push({
+      fecha: fechaStr,
+      totalReservas: estadisticaDia ? Number(estadisticaDia.totalReservas) : 0
+    });
+    
+    fechaActual.setDate(fechaActual.getDate() + 1);
+  }
+
+  // Calcular totales
+  const totalReservas = resultados.reduce((sum, item) => sum + item.totalReservas, 0);
+  const promedioDiario = totalReservas / resultados.length;
+
+  return {
+    periodo: {
+      inicio: fechaInicioStr,
+      fin: fechaFinStr,
+      tipo: periodo === '7dias' ? '7dias' : 'mes'
+    },
+    totalReservas,
+    promedioDiario: parseFloat(promedioDiario.toFixed(2)),
+    detallePorDia: resultados
+  };
+};
+
 export const obtenerEstadisticasPorMunicipio = async (provincia: string) => {
   if (!Manicure.sequelize) {
     throw new Error('Sequelize instance is not available');
