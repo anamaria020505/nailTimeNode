@@ -287,4 +287,19 @@ export const obtenerReservacionesDeHoyPorManicure = async (
     count,
     rows,
   };
+// Obtener reservaciones por estado y manicure
+export const obtenerReservacionesPorManicureYEstado = async (
+  manicureidusuario: string,
+  estado: string
+) => {
+  const { count, rows } = await Reservacion.findAndCountAll({
+    include: [
+      { model: Cliente, as: "cliente", required: false },
+      { model: Horario, as: "horario", required: true, where: { manicureidusuario } },
+      { model: Servicio, as: "servicio", required: false }
+    ],
+    where: { estado },
+    order: [["fecha", "DESC"]],
+  });
+  return { count, rows };
 };

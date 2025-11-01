@@ -10,6 +10,7 @@ import {
   obtenerReservacionesPorEstado,
   cambiarEstadoReservacion,
   obtenerReservacionesDeHoyPorManicure,
+  obtenerReservacionesPorManicureYEstado,
 } from "../controllers/reservacion";
 const AppError = require("../errors/AppError");
 const authenticate = require("../middlewares/autenticarse");
@@ -239,6 +240,22 @@ router.patch("/:id/estado", authenticate(["cliente"]),  async (req, res, next) =
     res.status(200).json({
       message: "Estado de reservación actualizado correctamente",
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/manicure/:manicureidusuario/estado/:estado", authenticate(["manicure"]), async (req, res, next) => {
+  try {
+    const { manicureidusuario, estado } = req.params;
+    if (!manicureidusuario || !estado || !manicureidusuario.trim() || !estado.trim()) {
+      throw new AppError("manicureidusuario y estado son requeridos", 400);
+    }
+    const reservaciones = await obtenerReservacionesPorManicureYEstado(manicureidusuario, estado);
+    if (!reservaciones || reservaciones.count === 0 || (Array.isArray(reservaciones.rows) && reservaciones.rows.length === 0)) {
+      throw new AppError("No se encontraron reservaciones para los criterios proporcionados", 404);
+    }
+    res.status(200).json(reservaciones);
   } catch (error) {
     next(error);
   }
