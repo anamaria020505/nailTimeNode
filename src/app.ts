@@ -14,6 +14,7 @@ import notificacionRoutes from "../routes/notificacion";
 import disennoRoutes from "../routes/disenno";
 import imagenesRoutes from "../routes/imagenes";
 import estadisticasRoutes from "../routes/estadisticas";
+import clienteRoutes from "../routes/cliente";
 
 const errorHandler = require("../middlewares/errorHandler.js");
 
@@ -43,6 +44,7 @@ app.use("/notificacion", notificacionRoutes);
 app.use("/disenios", disennoRoutes);
 app.use("/imagen", imagenesRoutes);
 app.use("/estadisticas", estadisticasRoutes);
+app.use("/cliente", clienteRoutes);
 
 app.use(errorHandler);
 
