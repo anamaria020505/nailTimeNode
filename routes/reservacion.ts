@@ -11,13 +11,13 @@ import {
   cambiarEstadoReservacion,
   obtenerReservacionesDeHoyPorManicure,
   obtenerReservacionesPorManicureYEstado,
+  obtenerTotalReservacionesAtendidasPorMes,
 } from "../controllers/reservacion";
 const AppError = require("../errors/AppError");
 const authenticate = require("../middlewares/autenticarse");
 const router = Router();
 
 // Rutas CRUD para reservaciones
-
 router.post("/", authenticate(["cliente"]),  async (req, res, next) => {
   try {
     const {
@@ -70,6 +70,7 @@ router.post("/", authenticate(["cliente"]),  async (req, res, next) => {
   }
 });
 
+// Obtener todas las reservaciones
 router.get("/", authenticate(["cliente","manicure"]),  async (req, res, next) => {
   try {
     const reservaciones = await obtenerReservaciones();
@@ -80,6 +81,7 @@ router.get("/", authenticate(["cliente","manicure"]),  async (req, res, next) =>
   }
 });
 
+// Obtener reservaciones de hoy por manicure
 router.get("/hoy", authenticate(["manicure"]), async (req: any, res, next) => {
   try {
     const manicureidusuario = req.userData?.usuario;
@@ -93,6 +95,7 @@ router.get("/hoy", authenticate(["manicure"]), async (req: any, res, next) => {
   }
 });
 
+// Obtener reservación por id
 router.get("/:id", authenticate(["cliente","manicure"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -108,8 +111,7 @@ router.get("/:id", authenticate(["cliente","manicure"]),  async (req, res, next)
   }
 });
 
-
-
+// Actualizar reservación
 router.put("/:id", authenticate(["cliente"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -157,6 +159,7 @@ router.put("/:id", authenticate(["cliente"]),  async (req, res, next) => {
   }
 });
 
+// Eliminar reservación
 router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -177,7 +180,6 @@ router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
 });
 
 // Rutas adicionales para consultas específicas
-
 router.get("/cliente/:clienteidusuario", authenticate(["cliente"]),  async (req, res, next) => {
   try {
     const { clienteidusuario } = req.params;
@@ -191,6 +193,7 @@ router.get("/cliente/:clienteidusuario", authenticate(["cliente"]),  async (req,
   }
 });
 
+// Obtener reservaciones por estado
 router.get("/estado/:estado",  authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { estado } = req.params;
@@ -201,6 +204,8 @@ router.get("/estado/:estado",  authenticate(["manicure"]), async (req, res, next
     next(error);
   }
 });
+
+// Obtener reservaciones paginadas
 router.get("/:page/:limit", authenticate(["cliente","manicure"]),  async (req, res, next) => {
   try {
     const page = parseInt(req.params.page);
@@ -245,6 +250,7 @@ router.patch("/:id/estado", authenticate(["cliente"]),  async (req, res, next) =
   }
 });
 
+// Obtener reservaciones por manicure y estado
 router.get("/manicure/:manicureidusuario/estado/:estado", authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { manicureidusuario, estado } = req.params;
@@ -256,6 +262,43 @@ router.get("/manicure/:manicureidusuario/estado/:estado", authenticate(["manicur
       throw new AppError("No se encontraron reservaciones para los criterios proporcionados", 404);
     }
     res.status(200).json(reservaciones);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Ruta para obtener el total de reservaciones atendidas por manicure en un mes dado
+router.get("/manicure/:manicureidusuario/atendidas/:anio/:mes", authenticate(["manicure", "admin"]), async (req, res, next) => {
+  try {
+    const { manicureidusuario, anio, mes } = req.params;
+    
+    if (!manicureidusuario || !manicureidusuario.trim()) {
+      throw new AppError("manicureidusuario es requerido", 400);
+    }
+
+    const añoNum = parseInt(anio);
+    const mesNum = parseInt(mes);
+
+    if (isNaN(añoNum) || añoNum < 2000 || añoNum > 2100) {
+      throw new AppError("El año debe ser un número válido entre 2000 y 2100", 400);
+    }
+
+    if (isNaN(mesNum)) {
+      throw new AppError("El mes debe ser un número válido", 400);
+    }
+
+    const total = await obtenerTotalReservacionesAtendidasPorMes(
+      manicureidusuario,
+      añoNum,
+      mesNum
+    );
+
+    res.status(200).json({
+      manicureidusuario,
+      año: añoNum,
+      mes: mesNum,
+      totalReservacionesAtendidas: total,
+    });
   } catch (error) {
     next(error);
   }
