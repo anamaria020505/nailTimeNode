@@ -6,6 +6,7 @@ import * as notificacionController from "./notificacion";
 const AppError = require("../errors/AppError");
 import { Op } from "sequelize";
 
+
 export const obtenerReservacionesPaginated = async (
   page: number,
   limit: number
@@ -287,6 +288,8 @@ export const obtenerReservacionesDeHoyPorManicure = async (
     count,
     rows,
   };
+};
+
 // Obtener reservaciones por estado y manicure
 export const obtenerReservacionesPorManicureYEstado = async (
   manicureidusuario: string,
@@ -302,4 +305,41 @@ export const obtenerReservacionesPorManicureYEstado = async (
     order: [["fecha", "DESC"]],
   });
   return { count, rows };
+};
+
+// Obtener total de reservaciones atendidas (completadas) por manicure en un mes dado
+export const obtenerTotalReservacionesAtendidasPorMes = async (
+  manicureidusuario: string,
+  año: number,
+  mes: number
+): Promise<number> => {
+
+  if (mes < 1 || mes > 12) {
+    throw new AppError("El mes debe estar entre 1 y 12", 400);
+  }
+
+  const fechaInicio = new Date(año, mes - 1, 1);
+  const fechaFin = new Date(año, mes, 0); 
+
+  const fechaInicioStr = `${año}-${String(mes).padStart(2, "0")}-01`;
+  const fechaFinStr = `${año}-${String(mes).padStart(2, "0")}-${String(fechaFin.getDate()).padStart(2, "0")}`;
+
+  const { count } = await Reservacion.findAndCountAll({
+    where: {
+      estado: "completada",
+      fecha: {
+        [Op.between]: [fechaInicioStr, fechaFinStr],
+      },
+    },
+    include: [
+      {
+        model: Horario,
+        as: "horario",
+        required: true,
+        where: { manicureidusuario },
+      },
+    ],
+  });
+
+  return count;
 };
