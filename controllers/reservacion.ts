@@ -9,15 +9,31 @@ import { Op } from "sequelize";
 
 export const obtenerReservacionesPaginated = async (
   page: number,
-  limit: number
+  limit: number,
+  manicureIdUsuario: string
 ): Promise<any> => {
   const offset = (page - 1) * limit;
 
   const { count, rows } = await Reservacion.findAndCountAll({
     include: [
-      { model: Cliente, as: "cliente", required: false },
-      { model: Horario, as: "horario", required: false },
-      { model: Servicio, as: "servicio", required: false },
+      { 
+        model: Cliente, 
+        as: "cliente", 
+        required: false 
+      },
+      { 
+        model: Horario, 
+        as: "horario", 
+        required: true,
+        where: {
+          manicureidusuario: manicureIdUsuario
+        }
+      },
+      { 
+        model: Servicio, 
+        as: "servicio", 
+        required: false 
+      },
     ],
     order: [["fecha", "DESC"]],
     limit: limit,
@@ -30,12 +46,27 @@ export const obtenerReservacionesPaginated = async (
   };
 };
 
-export const obtenerReservaciones = async (): Promise<any> => {
+export const obtenerReservaciones = async (manicureIdUsuario: string): Promise<any> => {
   const { count, rows } = await Reservacion.findAndCountAll({
     include: [
-      { model: Cliente, as: "cliente", required: false },
-      { model: Horario, as: "horario", required: false },
-      { model: Servicio, as: "servicio", required: false },
+      { 
+        model: Cliente, 
+        as: "cliente", 
+        required: false 
+      },
+      { 
+        model: Horario, 
+        as: "horario", 
+        required: true,
+        where: {
+          manicureidusuario: manicureIdUsuario
+        }
+      },
+      { 
+        model: Servicio, 
+        as: "servicio", 
+        required: false 
+      },
     ],
     order: [["fecha", "DESC"]],
   });

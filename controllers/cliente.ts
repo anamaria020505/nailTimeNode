@@ -1,7 +1,9 @@
+import { Op } from 'sequelize';
 import Cliente from "../models/cliente";
 import Reservacion from "../models/reservacion";
 import Horario from "../models/horario";
 import Usuario from "../models/usuario";
+import Servicio from "../models/servicio";
 
 export const obtenerClientesOrdenadosPorReservaciones = async (
   manicureidusuario: string
@@ -40,8 +42,8 @@ export const obtenerClientesOrdenadosPorReservaciones = async (
       }
     ],
     group: [
-      Cliente.sequelize.col('cliente.idusuario'),
-      Cliente.sequelize.col('cliente.telefono'),
+      Cliente.sequelize.col('Cliente.idusuario'),
+      Cliente.sequelize.col('Cliente.telefono'),
       Cliente.sequelize.col('usuario.usuario'),
       Cliente.sequelize.col('usuario.nombre')
     ],
@@ -55,5 +57,70 @@ export const obtenerClientesOrdenadosPorReservaciones = async (
     telefono: row.telefono,
     cantidadReservaciones: parseInt(row.cantidad_reservaciones || '0', 10)
   }));
+
+};
+
+/**
+ * Obtiene todas las reservaciones de un cliente autenticado
+ * @param clienteId ID del cliente autenticado
+ * @returns Lista de reservaciones del cliente
+ */
+export const obtenerReservacionesCliente = async (clienteId: string) => {
+  return await Reservacion.findAll({
+    where: { clienteidusuario: clienteId },
+    include: [
+      {
+        model: Horario,
+        as: 'horario',
+      },
+      {
+        model: Servicio,
+        as: 'servicio',
+      }
+    ],
+    order: [['fecha', 'DESC']]
+  });
+};
+
+/**
+ * Obtiene las reservaciones de un cliente autenticado con paginación
+ * @param clienteId ID del cliente autenticado
+ * @param page Número de página (comenzando desde 1)
+ * @param pageSize Cantidad de elementos por página
+ * @returns Objeto con las reservaciones y metadatos de paginación
+ */
+export const obtenerReservacionesClientePaginadas = async (
+  clienteId: string,
+  page: number = 1,
+  pageSize: number = 10
+) => {
+  const offset = (page - 1) * pageSize;
+  
+  const { count, rows } = await Reservacion.findAndCountAll({
+    where: { clienteidusuario: clienteId },
+    include: [
+      {
+        model: Horario,
+        as: 'horario',
+      },
+      {
+        model: Servicio,
+        as: 'servicio',
+      }
+    ],
+    order: [['fecha', 'DESC']],
+    limit: pageSize,
+    offset: offset
+  });
+
+  return {
+    reservaciones: rows,
+    paginacion: {
+      total: count,
+      paginaActual: page,
+      totalPaginas: Math.ceil(count / pageSize),
+      porPagina: pageSize
+    }
+  };
 };
 
