@@ -7,6 +7,7 @@ import {
   eliminarUsuario,
   actualizarUsuario,
   login,
+  logout,
 } from "../controllers/usuario";
 import { uploadManicure } from "../config/multer";
 const AppError = require("../errors/AppError");
@@ -31,7 +32,20 @@ router.post("/login",  async (req, res, next) => {
   }
 });
 
-
+// Ruta para cerrar sesión
+router.post("/logout", authenticate(["admin", "cliente", "manicure"]), (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      throw new AppError("No hay token de autenticación", 401);
+    }
+    const token = authHeader.split(" ")[1];
+    const result = logout(token);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.post("/", authenticate(["admin"]),uploadManicure.single("foto"), async (req, res, next) => {
   try {

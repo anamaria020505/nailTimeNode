@@ -6,6 +6,7 @@ import path from "path";
 import jwt from "jsonwebtoken";
 const AppError = require("../errors/AppError");
 const { comparePassword } = require("../utils/hashPass");
+const { addToBlacklist } = require("../utils/tokenBlacklist");
 
 export const obtenerUsuariosPaginated = async (
   page: number,
@@ -200,6 +201,12 @@ export const actualizarUsuario = async (
       }
     );
   }
+};
+
+export const logout = (token: string) => {
+  // Add the token to the blacklist
+  addToBlacklist(token);
+  return { message: "Sesión cerrada exitosamente" };
 };
 
 export const login = async (usuario: string, contrasena: string) => {
