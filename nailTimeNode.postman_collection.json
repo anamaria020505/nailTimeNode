@@ -1,0 +1,1727 @@
+{
+    "info": {
+        "_postman_id": "a2a7d7e3-1789-4413-9076-454552273333",
+        "name": "NailTime API",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Cliente",
+            "item": [
+                {
+                    "name": "Obtener Clientes Ordenados por Reservaciones",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente/ordenados-por-reservaciones",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente",
+                                "ordenados-por-reservaciones"
+                            ]
+                        },
+                        "description": "(manicure) Obtiene un listado de clientes ordenado por la cantidad de reservaciones."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Mis Reservaciones",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente/mis-reservaciones",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente",
+                                "mis-reservaciones"
+                            ]
+                        },
+                        "description": "(cliente) Obtiene todas las reservaciones del cliente autenticado."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Mis Reservaciones Paginadas",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/cliente/mis-reservaciones/paginado?page=1&pageSize=10",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "cliente",
+                                "mis-reservaciones",
+                                "paginado"
+                            ],
+                            "query": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "pageSize",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "(cliente) Obtiene las reservaciones del cliente autenticado con paginación."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Disenno",
+            "item": [
+                {
+                    "name": "Crear Diseño",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "manicureidusuario",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "imagen",
+                                    "type": "file"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/disenno",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "disenios"
+                            ]
+                        },
+                        "description": "(manicure) Crea un nuevo diseño con una imagen."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Diseños",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/disenno",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "disenios"
+                            ]
+                        },
+                        "description": "(manicure, cliente) Obtiene todos los diseños."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Diseños por Manicure",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/disenno/manicure/:manicureidusuario",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "disenios",
+                                "manicure",
+                                ":manicureidusuario"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "manicureidusuario",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Obtiene todos los diseños de una manicure específica."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Diseño por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/disenno/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "disenios",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure, cliente) Obtiene un diseño por su ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Actualizar Diseño",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "manicureidusuario",
+                                    "value": "",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "imagen",
+                                    "type": "file"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/disenno/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "disenios",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Actualiza un diseño existente."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Diseño",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/disenno/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "disenios",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Elimina un diseño."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Estadisticas",
+            "item": [
+                {
+                    "name": "Obtener Estadísticas por Ubicación",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/estadisticas/manicuristas/ubicacion",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "estadisticas",
+                                "manicuristas",
+                                "ubicacion"
+                            ]
+                        },
+                        "description": "(admin) Obtiene estadísticas de manicuristas por ubicación."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Estadísticas por Provincias",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/estadisticas/manicuristas/provincias",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "estadisticas",
+                                "manicuristas",
+                                "provincias"
+                            ]
+                        },
+                        "description": "(admin) Obtiene estadísticas de manicuristas por provincia."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Estadísticas por Municipios de una Provincia",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/estadisticas/manicuristas/provincia/:provincia/municipios",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "estadisticas",
+                                "manicuristas",
+                                "provincia",
+                                ":provincia",
+                                "municipios"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "provincia",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(admin) Obtiene estadísticas de manicuristas por municipio de una provincia específica."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Estadísticas de Reservaciones",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/estadisticas/reservaciones?periodo=7dias",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "estadisticas",
+                                "reservaciones"
+                            ],
+                            "query": [
+                                {
+                                    "key": "periodo",
+                                    "value": "7dias"
+                                }
+                            ]
+                        },
+                        "description": "(admin) Obtiene estadísticas de reservaciones. El período puede ser '7dias' o 'mes'."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Estadísticas de Nuevos Usuarios",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/estadisticas/nuevos-usuarios",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "estadisticas",
+                                "nuevos-usuarios"
+                            ]
+                        },
+                        "description": "(admin) Obtiene estadísticas de nuevos usuarios de la última semana."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Horario",
+            "item": [
+                {
+                    "name": "Obtener Horarios",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/horario",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "horario"
+                            ]
+                        },
+                        "description": "(manicure, cliente) Obtiene todos los horarios."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Horarios por Manicure",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/horario/manicure/:manicureId",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "horario",
+                                "manicure",
+                                ":manicureId"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "manicureId",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure, cliente) Obtiene los horarios de una manicure específica."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Horario por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/horario/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "horario",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Obtiene un horario por su ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Crear Horario",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"horaInicio\": \"09:00\",\n    \"horaFinal\": \"17:00\",\n    \"manicureId\": \"<ID_MANICURE>\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/horario",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "horario"
+                            ]
+                        },
+                        "description": "(manicure) Crea un nuevo horario."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Actualizar Horario",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"horaInicio\": \"09:00\",\n    \"horaFinal\": \"18:00\",\n    \"manicureId\": \"<ID_MANICURE>\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/horario/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "horario",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Actualiza un horario existente."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Horario",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/horario/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "horario",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Elimina un horario."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Imagenes",
+            "item": [
+                {
+                    "name": "Obtener Imagen por URL",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/imagenes?url=disenios/<nombre_archivo.jpg>",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "imagen"
+                            ],
+                            "query": [
+                                {
+                                    "key": "url",
+                                    "value": "disenios/<nombre_archivo.jpg>"
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Obtiene una imagen por su URL. La URL es relativa a la carpeta 'uploads'."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Notificacion",
+            "item": [
+                {
+                    "name": "Obtener Notificaciones de Usuario",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notificacion/:idusuario?rol=cliente&soloNoLeidas=true",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "notificacion",
+                                ":idusuario"
+                            ],
+                            "query": [
+                                {
+                                    "key": "rol",
+                                    "value": "cliente"
+                                },
+                                {
+                                    "key": "soloNoLeidas",
+                                    "value": "true"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "idusuario",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(cliente, manicure) Obtiene todas las notificaciones de un usuario. Query params: rol ('cliente' o 'manicure'), soloNoLeidas ('true' o 'false')."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Contar Notificaciones No Leídas",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notificacion/:idusuario/count?rol=cliente",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "notificacion",
+                                ":idusuario",
+                                "count"
+                            ],
+                            "query": [
+                                {
+                                    "key": "rol",
+                                    "value": "cliente"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "idusuario",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(cliente, manicure) Cuenta las notificaciones no leídas de un usuario. Query param: rol ('cliente' o 'manicure')."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Marcar Notificación como Leída",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notificacion/:id/leida",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "notificacion",
+                                ":id",
+                                "leida"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(cliente, manicure) Marca una notificación específica como leída."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Marcar Todas las Notificaciones como Leídas",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notificacion/:idusuario/marcar-todas-leidas?rol=cliente",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "notificacion",
+                                ":idusuario",
+                                "marcar-todas-leidas"
+                            ],
+                            "query": [
+                                {
+                                    "key": "rol",
+                                    "value": "cliente"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "idusuario",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(cliente, manicure) Marca todas las notificaciones de un usuario como leídas. Query param: rol ('cliente' o 'manicure')."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Notificación",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/notificacion/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "notificacion",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(cliente, manicure) Elimina una notificación."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Reservacion",
+            "item": [
+                {
+                    "name": "Crear Reservación",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"disenno\": \"URL_disenno\",\n    \"tamanno\": \"mediano\",\n    \"precio\": 50,\n    \"fecha\": \"2024-12-31T10:00:00Z\",\n    \"estado\": \"pendiente\",\n    \"horarioid\": 1,\n    \"clienteidusuario\": \"<ID_CLIENTE>\",\n    \"servicioid\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion"
+                            ]
+                        },
+                        "description": "(cliente) Crea una nueva reservación."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Todas las Reservaciones",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion"
+                            ]
+                        },
+                        "description": "(manicure) Obtiene todas las reservaciones de la manicure autenticada."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Reservaciones de Hoy",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/hoy",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                "hoy"
+                            ]
+                        },
+                        "description": "(manicure) Obtiene las reservaciones de hoy para la manicure autenticada."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Reservación por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(cliente, manicure) Obtiene una reservación por su ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Actualizar Reservación",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"disenno\": \"URL_disenno_actualizado\",\n    \"tamanno\": \"grande\",\n    \"precio\": 60,\n    \"fecha\": \"2025-01-15T11:00:00Z\",\n    \"estado\": \"confirmada\",\n    \"horarioid\": 2,\n    \"clienteidusuario\": \"<ID_CLIENTE>\",\n    \"servicioid\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(cliente) Actualiza una reservación existente."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Reservación",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Elimina una reservación."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Reservaciones por Cliente",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/cliente/:clienteidusuario",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                "cliente",
+                                ":clienteidusuario"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "clienteidusuario",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(cliente) Obtiene todas las reservaciones de un cliente específico."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Reservaciones por Estado",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/estado/:estado",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                "estado",
+                                ":estado"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "estado",
+                                    "value": "pendiente"
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Obtiene todas las reservaciones con un estado específico."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cambiar Estado de Reservación",
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"estado\": \"confirmada\",\n    \"precio\": 55\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/:id/estado",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                ":id",
+                                "estado"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Cambia el estado de una reservación. El precio es opcional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Reservaciones por Manicure y Estado",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/manicure/estado/:estado",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                "manicure",
+                                "estado",
+                                ":estado"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "estado",
+                                    "value": "pendiente"
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Obtiene las reservaciones de la manicure autenticada con un estado específico."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Total de Reservaciones Atendidas por Mes",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/reservacion/manicure/atendidas/:anio/:mes",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "reservacion",
+                                "manicure",
+                                "atendidas",
+                                ":anio",
+                                ":mes"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "anio",
+                                    "value": "2024"
+                                },
+                                {
+                                    "key": "mes",
+                                    "value": "12"
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Obtiene el total de reservaciones atendidas por la manicure autenticada en un mes y año específicos."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Servicio",
+            "item": [
+                {
+                    "name": "Obtener Servicios por Manicure",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/servicio/manicure/:manicureid",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "servicios",
+                                "manicure",
+                                ":manicureid"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "manicureid",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure, cliente) Obtiene los servicios de una manicure específica."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Servicios Paginados",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/servicio/:page/:limit?search=manicura",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "servicios",
+                                ":page",
+                                ":limit"
+                            ],
+                            "query": [
+                                {
+                                    "key": "search",
+                                    "value": "manicura"
+                                }
+                            ],
+                            "variable": [
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "limit",
+                                    "value": "10"
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Obtiene todos los servicios con paginación y búsqueda opcional."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Servicios",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/servicio",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "servicios"
+                            ]
+                        },
+                        "description": "(manicure) Obtiene todos los servicios."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Servicio por ID",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/servicio/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "servicios",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Obtiene un servicio por su ID."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Crear Servicio",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"Manicura Completa\",\n    \"manicureidusuario\": \"<ID_MANICURE>\",\n    \"disponible\": true\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/servicio",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "servicios"
+                            ]
+                        },
+                        "description": "(manicure) Crea un nuevo servicio."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Actualizar Servicio",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"nombre\": \"Manicura y Pedicura\",\n    \"disponible\": false\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/servicio/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "servicios",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Actualiza un servicio existente."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Servicio",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/servicio/:id",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "servicios",
+                                ":id"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "id",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(manicure) Elimina un servicio."
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Usuario",
+            "item": [
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"usuario\": \"<USUARIO>\",\n    \"contrasena\": \"<CONTRASENA>\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/usuario/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "usuarios",
+                                "login"
+                            ]
+                        },
+                        "description": "(public) Inicia sesión y obtiene un token de autenticación."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/usuario/logout",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "usuarios",
+                                "logout"
+                            ]
+                        },
+                        "description": "(admin, cliente, manicure) Cierra la sesión del usuario."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Crear Usuario",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "usuario",
+                                    "value": "nuevo_usuario",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "nombre",
+                                    "value": "Nombre Apellido",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "contrasena",
+                                    "value": "password123",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "rol",
+                                    "value": "cliente",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "cliente[telefono]",
+                                    "value": "123456789",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/usuario",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "usuarios"
+                            ]
+                        },
+                        "description": "(admin) Crea un nuevo usuario. Para crear una manicure, cambia el rol y añade los campos de manicure."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Usuarios",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/usuario",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "usuarios"
+                            ]
+                        },
+                        "description": "(admin) Obtiene todos los usuarios."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Obtener Usuario por Usuario",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/usuario/:usuario",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "usuarios",
+                                ":usuario"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "usuario",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(admin) Obtiene un usuario por su nombre de usuario."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Actualizar Usuario",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "usuario",
+                                    "value": "usuario_actualizado",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "nombre",
+                                    "value": "Nombre Actualizado",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "rol",
+                                    "value": "cliente",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "cliente[telefono]",
+                                    "value": "987654321",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/usuario/:usuarioU",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "usuarios",
+                                ":usuarioU"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "usuarioU",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(admin) Actualiza un usuario"
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Eliminar Usuario",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/usuario/:usuario",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "usuarios",
+                                ":usuario"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "usuario",
+                                    "value": ""
+                                }
+                            ]
+                        },
+                        "description": "(admin) Elimina un usuario."
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ]
+}
