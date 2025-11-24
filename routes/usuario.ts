@@ -32,6 +32,39 @@ router.post("/login",  async (req, res, next) => {
   }
 });
 
+// Registro público de clientes
+router.post("/register", async (req, res, next) => {
+  try {
+    const { usuario, nombre, contrasena, cliente } = req.body;
+
+    if (!usuario || !nombre || !contrasena) {
+      throw new AppError("Usuario, nombre y contraseña son requeridos", 400);
+    }
+
+    const hashedPassword = await hashPassword(contrasena);
+
+    const telefono = cliente?.telefono || req.body.telefono;
+    const newUser = await crearUsuario(
+      usuario,
+      nombre,
+      hashedPassword,
+      "cliente",
+      telefono ? { telefono } : undefined,
+      undefined
+    );
+
+    res.status(201).json(newUser);
+  } catch (error: any) {
+    if (
+      error.parent?.detail?.includes("usuario") &&
+      error.parent?.code === "23505"
+    ) {
+      return next(new AppError("El usuario ya existe", 400));
+    }
+    next(error);
+  }
+});
+
 // Ruta para cerrar sesión
 router.post("/logout", authenticate(["admin", "cliente", "manicure"]), (req, res, next) => {
   try {
