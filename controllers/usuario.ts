@@ -49,7 +49,7 @@ export const obtenerUsuarios = async (): Promise<any> => {
 
 export const obtenerUsuarioPorUsuario = async (usuario: string) => {
   const user = await Usuario.findByPk(usuario, {
-    attributes: { exclude: ["password"] },
+    attributes: { exclude: ["contrasena"] },
     include: [
       { model: Cliente, as: "cliente", required: false },
       { model: Manicure, as: "manicure", required: false },

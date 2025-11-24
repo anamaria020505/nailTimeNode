@@ -80,6 +80,29 @@ router.post("/logout", authenticate(["admin", "cliente", "manicure"]), (req, res
   }
 });
 
+// Obtener datos del usuario autenticado
+router.get(
+  "/me",
+  authenticate(["admin", "cliente", "manicure"]),
+  async (req, res, next) => {
+    try {
+      const usuario = (req as any).userData?.usuario;
+      if (!usuario) {
+        throw new AppError("No se pudo determinar el usuario autenticado", 401);
+      }
+
+      const user = await obtenerUsuarioPorUsuario(usuario);
+      if (!user) {
+        throw new AppError("Usuario no encontrado", 404);
+      }
+
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 router.post("/", authenticate(["admin"]),uploadManicure.single("foto"), async (req, res, next) => {
   try {
     const { usuario, nombre, contrasena, rol } = req.body;
