@@ -15,7 +15,7 @@ const router = Router();
 // Obtener todos los horarios (paginados)
 
 // Obtener todos los horarios
-router.get("/", authenticate(["manicure","cliente"]),  async (req, res, next) => {
+router.get("/", authenticate(["manicure", "cliente"]), async (req, res, next) => {
   try {
     const horarios = await obtenerHorarios();
     res.status(200).json(horarios);
@@ -24,7 +24,36 @@ router.get("/", authenticate(["manicure","cliente"]),  async (req, res, next) =>
   }
 });
 
-router.get("/:page/:limit", authenticate(["manicure","cliente"]),  async (req, res, next) => {
+
+
+// Obtener horarios por manicure
+router.get("/manicure/:manicureId", authenticate(["manicure", "cliente"]), async (req, res, next) => {
+  try {
+    const { manicureId } = req.params;
+    const horarios = await obtenerHorariosPorManicure(manicureId);
+    res.status(200).json(horarios);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Obtener un horario por ID
+router.get("/:id", authenticate(["manicure"]), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const horario = await obtenerHorarioPorId(parseInt(id));
+
+    if (!horario) {
+      throw new AppError("Horario no encontrado", 404);
+    }
+
+    res.status(200).json(horario);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/:page/:limit", authenticate(["manicure", "cliente"]), async (req, res, next) => {
   try {
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
@@ -40,35 +69,8 @@ router.get("/:page/:limit", authenticate(["manicure","cliente"]),  async (req, r
   }
 });
 
-// Obtener horarios por manicure
-router.get("/manicure/:manicureId", authenticate(["manicure","cliente"]),  async (req, res, next) => {
-  try {
-    const { manicureId } = req.params;
-    const horarios = await obtenerHorariosPorManicure(manicureId);
-    res.status(200).json(horarios);
-  } catch (error) {
-    next(error);
-  }
-});
-
-// Obtener un horario por ID
-router.get("/:id", authenticate(["manicure"]),  async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const horario = await obtenerHorarioPorId(parseInt(id));
-
-    if (!horario) {
-      throw new AppError("Horario no encontrado", 404);
-    }
-
-    res.status(200).json(horario);
-  } catch (error) {
-    next(error);
-  }
-});
-
 // Crear un nuevo horario
-router.post("/", authenticate(["manicure"]),  async (req, res, next) => {
+router.post("/", authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { horaInicio, horaFinal, manicureId } = req.body;
 
@@ -90,7 +92,7 @@ router.post("/", authenticate(["manicure"]),  async (req, res, next) => {
 });
 
 // Actualizar un horario existente
-router.put("/:id", authenticate(["manicure"]),  async (req, res, next) => {
+router.put("/:id", authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { horaInicio, horaFinal, manicureId } = req.body;
@@ -119,7 +121,7 @@ router.put("/:id", authenticate(["manicure"]),  async (req, res, next) => {
 });
 
 // Eliminar un horario
-router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
+router.delete("/:id", authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { id } = req.params;
     await eliminarHorario(parseInt(id));

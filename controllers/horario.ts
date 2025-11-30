@@ -52,28 +52,23 @@ export const crearHorario = async (
   horaFinal: string,
   manicureId: string
 ) => {
+  if (horaInicio >= horaFinal) {
+    throw new AppError("La hora de inicio debe ser menor que la hora final", 400);
+  }
+
+  console.log('Checking overlap for:', { horaInicio, horaFinal, manicureId });
+
   // Verificar que no haya solapamiento de horarios
   const horarioExistente = await Horario.findOne({
     where: {
       manicureidusuario: manicureId,
-      [Op.or]: [
-        {
-          horaInicio: { [Op.between]: [horaInicio, horaFinal] },
-        },
-        {
-          horaFinal: { [Op.between]: [horaInicio, horaFinal] },
-        },
-        {
-          [Op.and]: [
-            { horaInicio: { [Op.lte]: horaInicio } },
-            { horaFinal: { [Op.gte]: horaFinal } },
-          ],
-        },
-      ],
+      horaInicio: { [Op.lt]: horaFinal },
+      horaFinal: { [Op.gt]: horaInicio },
     },
   });
 
   if (horarioExistente) {
+    console.log('Overlap found with:', horarioExistente.toJSON());
     throw new AppError("El horario se solapa con un horario existente", 400);
   }
 
@@ -92,25 +87,17 @@ export const actualizarHorario = async (
   horaFinal: string,
   manicureId: string
 ) => {
+  if (horaInicio >= horaFinal) {
+    throw new AppError("La hora de inicio debe ser menor que la hora final", 400);
+  }
+
   // Verificar que no haya solapamiento de horarios (excluyendo el horario actual)
   const horarioExistente = await Horario.findOne({
     where: {
       id: { [Op.ne]: id },
       manicureidusuario: manicureId,
-      [Op.or]: [
-        {
-          horaInicio: { [Op.between]: [horaInicio, horaFinal] },
-        },
-        {
-          horaFinal: { [Op.between]: [horaInicio, horaFinal] },
-        },
-        {
-          [Op.and]: [
-            { horaInicio: { [Op.lte]: horaInicio } },
-            { horaFinal: { [Op.gte]: horaFinal } },
-          ],
-        },
-      ],
+      horaInicio: { [Op.lt]: horaFinal },
+      horaFinal: { [Op.gt]: horaInicio },
     },
   });
 
