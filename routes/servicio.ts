@@ -81,10 +81,15 @@ router.get("/:id", authenticate(["manicure"]),  async (req, res, next) => {
 // Crear un nuevo servicio
 router.post("/", authenticate(["manicure"]),  async (req, res, next) => {
   try {
-    const { nombre, manicureidusuario, disponible } = req.body;
+    const { nombre, disponible } = req.body;
+    const manicureidusuario = (req as any).userData?.usuario;
 
-    if (!nombre || !manicureidusuario) {
-      throw new AppError("Nombre y ID de manicure son campos requeridos", 400);
+    if (!nombre) {
+      throw new AppError("El nombre del servicio es requerido", 400);
+    }
+
+    if (!manicureidusuario) {
+      throw new AppError("No se pudo determinar el usuario autenticado", 401);
     }
 
     const servicio = await crearServicio(
@@ -112,16 +117,31 @@ router.put("/:id", authenticate(["manicure"]),  async (req, res, next) => {
       throw new AppError("ID de servicio no válido", 400);
     }
 
-    const { nombre, disponible, manicureidusuario } = req.body;
+    const { nombre, disponible } = req.body;
+    const manicureidusuario = (req as any).userData?.usuario;
 
-    if (!nombre && disponible === undefined && !manicureidusuario) {
+    if (!manicureidusuario) {
+      throw new AppError("No se pudo determinar el usuario autenticado", 401);
+    }
+
+    if (!nombre && disponible === undefined) {
       throw new AppError("Se requiere al menos un campo para actualizar", 400);
+    }
+
+    // Verificar que el servicio pertenezca al usuario
+    const servicioExistente = await obtenerServicioPorId(id);
+    if (!servicioExistente) {
+      throw new AppError("Servicio no encontrado", 404);
+    }
+
+    if ((servicioExistente as any).manicureidusuario !== manicureidusuario) {
+      throw new AppError("No tienes permisos para actualizar este servicio", 403);
     }
 
     const servicio = await actualizarServicio(
       id,
-      nombre,
-      disponible,
+      nombre || (servicioExistente as any).nombre,
+      disponible !== undefined ? disponible : (servicioExistente as any).disponible,
       manicureidusuario
     );
 
@@ -137,6 +157,21 @@ router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
     const id = parseInt(req.params.id);
     if (isNaN(id)) {
       throw new AppError("ID de servicio no válido", 400);
+    }
+
+    const manicureidusuario = (req as any).userData?.usuario;
+    if (!manicureidusuario) {
+      throw new AppError("No se pudo determinar el usuario autenticado", 401);
+    }
+
+    // Verificar que el servicio pertenezca al usuario
+    const servicioExistente = await obtenerServicioPorId(id);
+    if (!servicioExistente) {
+      throw new AppError("Servicio no encontrado", 404);
+    }
+
+    if ((servicioExistente as any).manicureidusuario !== manicureidusuario) {
+      throw new AppError("No tienes permisos para eliminar este servicio", 403);
     }
 
     const deleted = await eliminarServicio(id);

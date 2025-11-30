@@ -89,12 +89,17 @@ export const crearUsuario = async (
   });
 
   // Handle different roles
-  if (rol === "cliente" && cliente) {
-    await Cliente.create({
-      idusuario: usuario,
-      telefono: cliente.telefono,
-    });
-  } else if (rol === "manicure" && manicure) {
+  if (rol === "cliente") {
+    if (cliente?.telefono) {
+      await Cliente.create({
+        idusuario: usuario,
+        telefono: cliente.telefono,
+      });
+    }
+  } else if (rol === "manicure") {
+    if (!manicure) {
+      throw new Error("Faltan campos requeridos para el rol manicure");
+    }
     await Manicure.create({
       idusuario: usuario,
       foto: manicure.foto,
@@ -104,7 +109,7 @@ export const crearUsuario = async (
       telefono: manicure.telefono,
     });
   } else if (rol !== "admin") {
-    throw new Error("Rol inválido o faltan campos requeridos");
+    throw new Error("Rol inválido");
   }
 
   return user;
