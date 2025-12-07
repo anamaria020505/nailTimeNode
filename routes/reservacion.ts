@@ -18,7 +18,7 @@ const authenticate = require("../middlewares/autenticarse");
 const router = Router();
 
 // Rutas CRUD para reservaciones
-router.post("/", authenticate(["cliente"]),  async (req, res, next) => {
+router.post("/", authenticate(["cliente"]), async (req, res, next) => {
   try {
     const {
       disenno,
@@ -32,7 +32,7 @@ router.post("/", authenticate(["cliente"]),  async (req, res, next) => {
     } = req.body;
 
     if (
-      !precio ||
+
       !fecha ||
       !estado ||
       !horarioid ||
@@ -40,7 +40,7 @@ router.post("/", authenticate(["cliente"]),  async (req, res, next) => {
       !servicioid
     ) {
       throw new AppError(
-        "Precio, fecha, estado, horario, cliente y servicio son requeridos",
+        "Fecha, estado, horario, cliente y servicio son requeridos",
         400
       );
     }
@@ -71,11 +71,11 @@ router.post("/", authenticate(["cliente"]),  async (req, res, next) => {
 });
 
 // Obtener todas las reservaciones
-router.get("/", authenticate(["manicure"]),  async (req, res, next) => {
+router.get("/", authenticate(["manicure"]), async (req, res, next) => {
   try {
     const manicureidusuario = req.userData?.usuario;
 
-    if(!manicureidusuario){
+    if (!manicureidusuario) {
       throw new AppError("No se pudo identificar la manicure", 401);
     }
 
@@ -102,7 +102,7 @@ router.get("/hoy", authenticate(["manicure"]), async (req: any, res, next) => {
 });
 
 // Obtener reservación por id
-router.get("/:id", authenticate(["cliente","manicure"]),  async (req, res, next) => {
+router.get("/:id", authenticate(["cliente", "manicure"]), async (req, res, next) => {
   try {
     const { id } = req.params;
     const reservacion = await obtenerReservacionPorId(parseInt(id));
@@ -118,7 +118,7 @@ router.get("/:id", authenticate(["cliente","manicure"]),  async (req, res, next)
 });
 
 // Actualizar reservación
-router.put("/:id", authenticate(["cliente"]),  async (req, res, next) => {
+router.put("/:id", authenticate(["cliente"]), async (req, res, next) => {
   try {
     const { id } = req.params;
     const {
@@ -166,7 +166,7 @@ router.put("/:id", authenticate(["cliente"]),  async (req, res, next) => {
 });
 
 // Eliminar reservación
-router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
+router.delete("/:id", authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!id) {
@@ -186,7 +186,7 @@ router.delete("/:id", authenticate(["manicure"]),  async (req, res, next) => {
 });
 
 // Rutas adicionales para consultas específicas
-router.get("/cliente/:clienteidusuario", authenticate(["cliente"]),  async (req, res, next) => {
+router.get("/cliente/:clienteidusuario", authenticate(["cliente"]), async (req, res, next) => {
   try {
     const { clienteidusuario } = req.params;
     const reservaciones = await obtenerReservacionesPorCliente(
@@ -200,7 +200,7 @@ router.get("/cliente/:clienteidusuario", authenticate(["cliente"]),  async (req,
 });
 
 // Obtener reservaciones por estado
-router.get("/estado/:estado",  authenticate(["manicure"]), async (req, res, next) => {
+router.get("/estado/:estado", authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { estado } = req.params;
     const reservaciones = await obtenerReservacionesPorEstado(estado);
@@ -212,13 +212,13 @@ router.get("/estado/:estado",  authenticate(["manicure"]), async (req, res, next
 });
 
 // Obtener reservaciones paginadas
-router.get("/:page/:limit", authenticate(["cliente","manicure"]),  async (req, res, next) => {
+router.get("/:page/:limit", authenticate(["cliente", "manicure"]), async (req, res, next) => {
   try {
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
     const manicureidusuario = req.userData?.usuario;
 
-    if(!manicureidusuario){
+    if (!manicureidusuario) {
       throw new AppError("No se pudo identificar la manicure", 401);
     }
 
@@ -234,7 +234,7 @@ router.get("/:page/:limit", authenticate(["cliente","manicure"]),  async (req, r
 });
 
 // Ruta para cambiar el estado de una reservación específica
-router.patch("/:id/estado", authenticate([ "manicure"]),  async (req, res, next) => {
+router.patch("/:id/estado", authenticate(["manicure"]), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { estado, precio } = req.body;
@@ -264,7 +264,7 @@ router.patch("/:id/estado", authenticate([ "manicure"]),  async (req, res, next)
 // Obtener reservaciones por manicure y estado
 router.get("/manicure/estado/:estado", authenticate(["manicure"]), async (req, res, next) => {
   try {
-    const {  estado } = req.params;
+    const { estado } = req.params;
     const manicureidusuario = req.userData?.usuario;
 
     if (!manicureidusuario || !estado || !manicureidusuario.trim() || !estado.trim()) {
@@ -285,8 +285,8 @@ router.get("/manicure/atendidas/:anio/:mes", authenticate(["manicure"]), async (
   try {
     const manicureidusuario = req.userData?.usuario;
 
-    const {  anio, mes } = req.params;
-    
+    const { anio, mes } = req.params;
+
     if (!manicureidusuario || !manicureidusuario.trim()) {
       throw new AppError("manicureidusuario es requerido", 400);
     }

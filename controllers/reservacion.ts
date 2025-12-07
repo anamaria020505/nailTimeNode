@@ -16,23 +16,23 @@ export const obtenerReservacionesPaginated = async (
 
   const { count, rows } = await Reservacion.findAndCountAll({
     include: [
-      { 
-        model: Cliente, 
-        as: "cliente", 
-        required: false 
+      {
+        model: Cliente,
+        as: "cliente",
+        required: false
       },
-      { 
-        model: Horario, 
-        as: "horario", 
+      {
+        model: Horario,
+        as: "horario",
         required: true,
         where: {
           manicureidusuario: manicureIdUsuario
         }
       },
-      { 
-        model: Servicio, 
-        as: "servicio", 
-        required: false 
+      {
+        model: Servicio,
+        as: "servicio",
+        required: false
       },
     ],
     order: [["fecha", "DESC"]],
@@ -49,23 +49,23 @@ export const obtenerReservacionesPaginated = async (
 export const obtenerReservaciones = async (manicureIdUsuario: string): Promise<any> => {
   const { count, rows } = await Reservacion.findAndCountAll({
     include: [
-      { 
-        model: Cliente, 
-        as: "cliente", 
-        required: false 
+      {
+        model: Cliente,
+        as: "cliente",
+        required: false
       },
-      { 
-        model: Horario, 
-        as: "horario", 
+      {
+        model: Horario,
+        as: "horario",
         required: true,
         where: {
           manicureidusuario: manicureIdUsuario
         }
       },
-      { 
-        model: Servicio, 
-        as: "servicio", 
-        required: false 
+      {
+        model: Servicio,
+        as: "servicio",
+        required: false
       },
     ],
     order: [["fecha", "DESC"]],
@@ -282,7 +282,7 @@ export const cambiarEstadoReservacion = async (
 
   const fechaFormateada = new Date(reservacion.fecha).toLocaleDateString('es-ES');
   const mensaje = `El estado de tu reservación #${id} del ${fechaFormateada} ha cambiado a: ${estadoTexto}`;
-  
+
   await notificacionController.crearNotificacionParaCliente(
     id,
     mensaje,
@@ -350,7 +350,7 @@ export const obtenerTotalReservacionesAtendidasPorMes = async (
   }
 
   const fechaInicio = new Date(año, mes - 1, 1);
-  const fechaFin = new Date(año, mes, 0); 
+  const fechaFin = new Date(año, mes, 0);
 
   const fechaInicioStr = `${año}-${String(mes).padStart(2, "0")}-01`;
   const fechaFinStr = `${año}-${String(mes).padStart(2, "0")}-${String(fechaFin.getDate()).padStart(2, "0")}`;

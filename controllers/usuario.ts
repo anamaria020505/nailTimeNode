@@ -47,6 +47,22 @@ export const obtenerUsuarios = async (): Promise<any> => {
   };
 };
 
+export const obtenerManicures = async (): Promise<any> => {
+  const { count, rows } = await Usuario.findAndCountAll({
+    where: { rol: "manicure" },
+    attributes: { exclude: ["contrasena"] },
+    include: [
+      { model: Manicure, as: "manicure", required: true },
+    ],
+    order: [["nombre", "ASC"]],
+  });
+
+  return {
+    count,
+    rows,
+  };
+};
+
 export const obtenerUsuarioPorUsuario = async (usuario: string) => {
   const user = await Usuario.findByPk(usuario, {
     attributes: { exclude: ["contrasena"] },
@@ -227,16 +243,16 @@ export const login = async (usuario: string, contrasena: string) => {
   }
 
   const isMatch = await comparePassword(contrasena, user.contrasena);
-  
+
   if (!isMatch) {
     throw new AppError("Usuario o contraseña incorrectos", 401);
   }
 
   // Create token
   const token = jwt.sign(
-    { 
-      usuario: user.usuario, 
-      role: user.rol 
+    {
+      usuario: user.usuario,
+      role: user.rol
     },
     process.env.JWT_SECRET || 'your-secret-key',
     { expiresIn: '24h' }

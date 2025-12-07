@@ -7,6 +7,8 @@ import {
   eliminarHorario,
   obtenerHorariosPorManicure,
   obtenerHorariosPaginated,
+  obtenerDisponiblesPorFecha,
+  obtenerFechasDisponibles,
 } from "../controllers/horario";
 const AppError = require("../errors/AppError");
 const authenticate = require("../middlewares/autenticarse");
@@ -32,6 +34,34 @@ router.get("/manicure/:manicureId", authenticate(["manicure", "cliente"]), async
     const { manicureId } = req.params;
     const horarios = await obtenerHorariosPorManicure(manicureId);
     res.status(200).json(horarios);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Obtener horarios disponibles por fecha
+router.get("/manicure/:manicureId/disponibles/:fecha", authenticate(["manicure", "cliente"]), async (req, res, next) => {
+  try {
+    const { manicureId, fecha } = req.params;
+    const horarios = await obtenerDisponiblesPorFecha(manicureId, fecha);
+    res.status(200).json(horarios);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Obtener fechas disponibles
+router.get("/manicure/:manicureId/fechas-disponibles", authenticate(["manicure", "cliente"]), async (req, res, next) => {
+  try {
+    const { manicureId } = req.params;
+    const { fechaInicio, fechaFin } = req.query;
+
+    if (!fechaInicio || !fechaFin) {
+      throw new AppError("fechaInicio y fechaFin son requeridos", 400);
+    }
+
+    const fechas = await obtenerFechasDisponibles(manicureId, fechaInicio as string, fechaFin as string);
+    res.status(200).json(fechas);
   } catch (error) {
     next(error);
   }

@@ -8,6 +8,7 @@ import {
   actualizarUsuario,
   login,
   logout,
+  obtenerManicures,
 } from "../controllers/usuario";
 import { uploadManicure } from "../config/multer";
 const AppError = require("../errors/AppError");
@@ -157,6 +158,15 @@ router.post("/", authenticate(["admin"]), uploadManicure.single("foto"), async (
       return next(new AppError("El usuario ya existe", 400));
     }
 
+    next(error);
+  }
+});
+
+router.get("/manicures", authenticate(["admin", "cliente", "manicure"]), async (req, res, next) => {
+  try {
+    const users = await obtenerManicures();
+    res.status(200).json(users);
+  } catch (error) {
     next(error);
   }
 });

@@ -19,12 +19,11 @@ interface ReservacionCreationAttributes
   extends Optional<
     ReservacionAtributos,
     "id" | "disenno" | "tamanno" | "createdAt" | "updatedAt"
-  > {}
+  > { }
 
 class Reservacion
   extends Model<ReservacionAtributos, ReservacionCreationAttributes>
-  implements ReservacionAtributos
-{
+  implements ReservacionAtributos {
   public id!: number;
   public disenno?: string;
   public tamanno?: string;
@@ -55,7 +54,7 @@ Reservacion.init(
     },
     precio: {
       type: DataTypes.FLOAT,
-      allowNull: false,
+      allowNull: true,
     },
     fecha: {
       type: DataTypes.DATEONLY,
