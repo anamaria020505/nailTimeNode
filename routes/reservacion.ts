@@ -12,6 +12,7 @@ import {
   obtenerReservacionesDeHoyPorManicure,
   obtenerReservacionesPorManicureYEstado,
   obtenerTotalReservacionesAtendidasPorMes,
+  reprogramarReservacion,
 } from "../controllers/reservacion";
 const AppError = require("../errors/AppError");
 const authenticate = require("../middlewares/autenticarse");
@@ -234,7 +235,7 @@ router.get("/:page/:limit", authenticate(["cliente", "manicure"]), async (req, r
 });
 
 // Ruta para cambiar el estado de una reservación específica
-router.patch("/:id/estado", authenticate(["manicure"]), async (req, res, next) => {
+router.patch("/:id/estado", authenticate(["manicure", "cliente"]), async (req, res, next) => {
   try {
     const { id } = req.params;
     const { estado, precio } = req.body;
@@ -251,7 +252,7 @@ router.patch("/:id/estado", authenticate(["manicure"]), async (req, res, next) =
       );
     }
 
-    await cambiarEstadoReservacion(parseInt(id), estado, parseFloat(precio));
+    await cambiarEstadoReservacion(parseInt(id), estado, parseFloat(precio), req.userData as any);
 
     res.status(200).json({
       message: "Estado de reservación actualizado correctamente",
