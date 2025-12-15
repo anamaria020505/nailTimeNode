@@ -13,6 +13,9 @@ import {
   obtenerReservacionesPorManicureYEstado,
   obtenerTotalReservacionesAtendidasPorMes,
   reprogramarReservacion,
+  obtenerEstadisticasReservas,
+  obtenerEstadisticasServicios,
+  obtenerTopClientes,
 } from "../controllers/reservacion";
 const AppError = require("../errors/AppError");
 const authenticate = require("../middlewares/autenticarse");
@@ -97,6 +100,48 @@ router.get("/hoy", authenticate(["manicure"]), async (req: any, res, next) => {
     }
     const reservaciones = await obtenerReservacionesDeHoyPorManicure(manicureidusuario);
     res.status(200).json(reservaciones);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Obtener estadísticas de reservaciones (últimos 7 días)
+router.get("/estadisticas", authenticate(["manicure"]), async (req, res, next) => {
+  try {
+    const manicureidusuario = req.userData?.usuario;
+    if (!manicureidusuario) {
+      throw new AppError("No se pudo identificar la manicure", 401);
+    }
+    const estadisticas = await obtenerEstadisticasReservas(manicureidusuario);
+    res.status(200).json(estadisticas);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Obtener estadísticas de servicios (pastel)
+router.get("/estadisticas/servicios", authenticate(["manicure"]), async (req, res, next) => {
+  try {
+    const manicureidusuario = req.userData?.usuario;
+    if (!manicureidusuario) {
+      throw new AppError("No se pudo identificar la manicure", 401);
+    }
+    const estadisticas = await obtenerEstadisticasServicios(manicureidusuario);
+    res.status(200).json(estadisticas);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Obtener top clientes
+router.get("/top-clientes", authenticate(["manicure"]), async (req, res, next) => {
+  try {
+    const manicureidusuario = req.userData?.usuario;
+    if (!manicureidusuario) {
+      throw new AppError("No se pudo identificar la manicure", 401);
+    }
+    const topClientes = await obtenerTopClientes(manicureidusuario);
+    res.status(200).json(topClientes);
   } catch (error) {
     next(error);
   }
@@ -315,6 +360,29 @@ router.get("/manicure/atendidas/:anio/:mes", authenticate(["manicure"]), async (
       mes: mesNum,
       totalReservacionesAtendidas: total,
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Reprogramar reservación
+router.patch("/:id/reprogramar", authenticate(["cliente"]), async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { fecha, horarioid } = req.body;
+
+    if (!fecha || !horarioid) {
+      throw new AppError("Fecha y horario son requeridos", 400);
+    }
+
+    await reprogramarReservacion(
+      parseInt(id),
+      fecha,
+      parseInt(horarioid),
+      req.userData as any
+    );
+
+    res.status(200).json({ message: "Reservación reprogramada exitosamente" });
   } catch (error) {
     next(error);
   }

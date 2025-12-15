@@ -18,7 +18,7 @@ const authenticate = (roles: string[]) => {
     try {
       const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
       if (roles.includes(decodeToken.role)) {
-        req.userData = { usuario: decodeToken.usuario };
+        req.userData = { usuario: decodeToken.usuario, role: decodeToken.role };
         next();
       } else {
         return next(new AppError("No tiene permisos para esta acción", 401));

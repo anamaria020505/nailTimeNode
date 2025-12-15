@@ -4,6 +4,7 @@ import Reservacion from "../models/reservacion";
 import Horario from "../models/horario";
 import Usuario from "../models/usuario";
 import Servicio from "../models/servicio";
+import Manicure from "../models/manicure";
 
 export const obtenerClientesOrdenadosPorReservaciones = async (
   manicureidusuario: string
@@ -72,6 +73,11 @@ export const obtenerReservacionesCliente = async (clienteId: string) => {
       {
         model: Horario,
         as: 'horario',
+        include: [{
+          model: Manicure,
+          as: 'manicure',
+          include: [{ model: Usuario, as: 'usuario' }]
+        }]
       },
       {
         model: Servicio,
@@ -95,13 +101,18 @@ export const obtenerReservacionesClientePaginadas = async (
   pageSize: number = 10
 ) => {
   const offset = (page - 1) * pageSize;
-  
+
   const { count, rows } = await Reservacion.findAndCountAll({
     where: { clienteidusuario: clienteId },
     include: [
       {
         model: Horario,
         as: 'horario',
+        include: [{
+          model: Manicure,
+          as: 'manicure',
+          include: [{ model: Usuario, as: 'usuario' }]
+        }]
       },
       {
         model: Servicio,

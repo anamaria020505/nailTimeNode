@@ -63,6 +63,22 @@ export const obtenerManicures = async (): Promise<any> => {
   };
 };
 
+export const obtenerClientes = async (): Promise<any> => {
+  const { count, rows } = await Usuario.findAndCountAll({
+    where: { rol: "cliente" },
+    attributes: { exclude: ["contrasena"] },
+    include: [
+      { model: Cliente, as: "cliente" },
+    ],
+    order: [["nombre", "ASC"]],
+  });
+
+  return {
+    count,
+    rows,
+  };
+};
+
 export const obtenerUsuarioPorUsuario = async (usuario: string) => {
   const user = await Usuario.findByPk(usuario, {
     attributes: { exclude: ["contrasena"] },
@@ -223,6 +239,48 @@ export const actualizarUsuario = async (
     );
   }
 };
+
+export const actualizarPerfil = async (
+  usuarioId: string,
+  data: {
+    nombre?: string;
+    telefono?: string;
+    direccion?: string;
+    provincia?: string;
+    municipio?: string;
+  }
+) => {
+  const user = await Usuario.findByPk(usuarioId);
+  if (!user) throw new AppError("Usuario no encontrado", 404);
+
+  // Update common fields
+  if (data.nombre) {
+    await user.update({ nombre: data.nombre });
+  }
+
+  // Update role-specific fields
+  if (user.rol === "cliente" && data.telefono) {
+    await Cliente.upsert(
+      { idusuario: usuarioId, telefono: data.telefono },
+      { conflictFields: ["idusuario"] }
+    );
+  } else if (user.rol === "manicure") {
+    const updateManicureData: any = {};
+    if (data.direccion) updateManicureData.direccion = data.direccion;
+    if (data.provincia) updateManicureData.provincia = data.provincia;
+    if (data.municipio) updateManicureData.municipio = data.municipio;
+    if (data.telefono) updateManicureData.telefono = data.telefono;
+
+    if (Object.keys(updateManicureData).length > 0) {
+      await Manicure.update(updateManicureData, {
+        where: { idusuario: usuarioId },
+      });
+    }
+  }
+
+  return await obtenerUsuarioPorUsuario(usuarioId);
+};
+
 
 export const logout = (token: string) => {
   // Add the token to the blacklist

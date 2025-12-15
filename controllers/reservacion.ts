@@ -3,6 +3,7 @@ import Cliente from "../models/cliente";
 import Horario from "../models/horario";
 import Servicio from "../models/servicio";
 import Usuario from "../models/usuario";
+import Manicure from "../models/manicure";
 import * as notificacionController from "./notificacion";
 const AppError = require("../errors/AppError");
 import { Op } from "sequelize";
@@ -29,7 +30,8 @@ export const obtenerReservacionesPaginated = async (
         required: true,
         where: {
           manicureidusuario: manicureIdUsuario
-        }
+        },
+        include: [{ model: Manicure, as: "manicure" }]
       },
       {
         model: Servicio,
@@ -63,7 +65,8 @@ export const obtenerReservaciones = async (manicureIdUsuario: string): Promise<a
         required: true,
         where: {
           manicureidusuario: manicureIdUsuario
-        }
+        },
+        include: [{ model: Manicure, as: "manicure" }]
       },
       {
         model: Servicio,
@@ -84,7 +87,7 @@ export const obtenerReservacionPorId = async (id: number) => {
   const reservacion = await Reservacion.findByPk(id, {
     include: [
       { model: Cliente, as: "cliente", required: false, include: [{ model: Usuario, as: "usuario" }] },
-      { model: Horario, as: "horario", required: false },
+      { model: Horario, as: "horario", required: false, include: [{ model: Manicure, as: "manicure" }] },
       { model: Servicio, as: "servicio", required: false },
     ],
   });
@@ -207,7 +210,7 @@ export const obtenerReservacionesPorCliente = async (
     where: { clienteidusuario },
     include: [
       { model: Cliente, as: "cliente", required: false, include: [{ model: Usuario, as: "usuario" }] },
-      { model: Horario, as: "horario", required: false },
+      { model: Horario, as: "horario", required: false, include: [{ model: Manicure, as: "manicure" }] },
       { model: Servicio, as: "servicio", required: false },
     ],
     order: [["fecha", "DESC"]],
@@ -224,7 +227,7 @@ export const obtenerReservacionesPorEstado = async (estado: string) => {
     where: { estado },
     include: [
       { model: Cliente, as: "cliente", required: false, include: [{ model: Usuario, as: "usuario" }] },
-      { model: Horario, as: "horario", required: false },
+      { model: Horario, as: "horario", required: false, include: [{ model: Manicure, as: "manicure" }] },
       { model: Servicio, as: "servicio", required: false },
     ],
     order: [["fecha", "DESC"]],
@@ -346,6 +349,7 @@ export const obtenerReservacionesDeHoyPorManicure = async (
         as: "horario",
         required: true,
         where: { manicureidusuario },
+        include: [{ model: Manicure, as: "manicure" }]
       },
       { model: Servicio, as: "servicio", required: false },
     ],
@@ -366,7 +370,7 @@ export const obtenerReservacionesPorManicureYEstado = async (
   const { count, rows } = await Reservacion.findAndCountAll({
     include: [
       { model: Cliente, as: "cliente", required: false, include: [{ model: Usuario, as: "usuario" }] },
-      { model: Horario, as: "horario", required: true, where: { manicureidusuario } },
+      { model: Horario, as: "horario", required: true, where: { manicureidusuario }, include: [{ model: Manicure, as: "manicure" }] },
       { model: Servicio, as: "servicio", required: false }
     ],
     where: { estado },
@@ -426,11 +430,13 @@ export const reprogramarReservacion = async (
     throw new AppError("Reservación no encontrada", 404);
   }
 
-  // Validar permisos
-  if (requestingUser.role === 'cliente') {
-    if (reservacion.clienteidusuario !== requestingUser.usuario) {
-      throw new AppError("No tienes permiso para modificar esta reservación", 403);
-    }
+  // Validar permisos: Solo los clientes pueden reprogramar
+  if (requestingUser.role !== 'cliente') {
+    throw new AppError("Solo los clientes pueden reprogramar citas", 403);
+  }
+
+  if (reservacion.clienteidusuario !== requestingUser.usuario) {
+    throw new AppError("No tienes permiso para modificar esta reservación", 403);
   }
 
   // Validar estado
@@ -465,4 +471,110 @@ export const reprogramarReservacion = async (
       nuevoHorario.manicureidusuario
     );
   }
+};
+
+export const obtenerEstadisticasReservas = async (manicureidusuario: string) => {
+  const hoy = new Date();
+  const ultimos7Dias = [];
+
+  // Generar array con los últimos 7 días
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(hoy.getDate() - i);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    ultimos7Dias.push(`${yyyy}-${mm}-${dd}`);
+  }
+
+  const estadisticas = await Promise.all(
+    ultimos7Dias.map(async (fecha) => {
+      const { count } = await Reservacion.findAndCountAll({
+        where: { fecha },
+        include: [
+          {
+            model: Horario,
+            as: "horario",
+            required: true,
+            where: { manicureidusuario },
+          },
+        ],
+      });
+      return { fecha, count };
+    })
+  );
+
+  return estadisticas;
+};
+
+export const obtenerTopClientes = async (manicureidusuario: string) => {
+  const { rows } = await Reservacion.findAndCountAll({
+    include: [
+      {
+        model: Horario,
+        as: "horario",
+        required: true,
+        where: { manicureidusuario },
+      },
+      {
+        model: Cliente,
+        as: "cliente",
+        required: true,
+        include: [{ model: Usuario, as: "usuario" }]
+      }
+    ],
+  });
+
+  const clientesMap = new Map<string, { cliente: any, count: number }>();
+
+  rows.forEach((res: any) => {
+    const clienteId = res.clienteidusuario;
+    if (!clientesMap.has(clienteId)) {
+      clientesMap.set(clienteId, { cliente: res.cliente, count: 0 });
+    }
+    clientesMap.get(clienteId)!.count++;
+  });
+
+  const topClientes = Array.from(clientesMap.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10);
+
+  return topClientes;
+};
+
+export const obtenerEstadisticasServicios = async (manicureidusuario: string) => {
+  const { count, rows } = await Reservacion.findAndCountAll({
+    include: [
+      {
+        model: Horario,
+        as: "horario",
+        required: true,
+        where: { manicureidusuario },
+      },
+      {
+        model: Servicio,
+        as: "servicio",
+        required: true,
+      },
+    ],
+  });
+
+  // Agrupar por servicio
+  const serviciosMap = new Map<string, number>();
+
+  rows.forEach((res: any) => {
+    const servicioNombre = res.servicio?.nombre || 'Desconocido';
+    const currentCount = serviciosMap.get(servicioNombre) || 0;
+    serviciosMap.set(servicioNombre, currentCount + 1);
+  });
+
+  const estadisticas = Array.from(serviciosMap.entries()).map(([nombre, cantidad]) => ({
+    nombre,
+    cantidad
+  }));
+
+  // Ordenar por cantidad descendente
+  estadisticas.sort((a, b) => b.cantidad - a.cantidad);
+
+  return estadisticas;
 };

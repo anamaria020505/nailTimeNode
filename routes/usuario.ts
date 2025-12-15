@@ -9,6 +9,7 @@ import {
   login,
   logout,
   obtenerManicures,
+  obtenerClientes,
 } from "../controllers/usuario";
 import { uploadManicure } from "../config/multer";
 const AppError = require("../errors/AppError");
@@ -104,17 +105,49 @@ router.get(
   }
 );
 
+// Actualizar perfil del usuario autenticado
+router.put(
+  "/me",
+  authenticate(["admin", "cliente", "manicure"]),
+  async (req, res, next) => {
+    try {
+      const usuarioId = (req as any).userData?.usuario;
+      if (!usuarioId) {
+        throw new AppError("No se pudo determinar el usuario autenticado", 401);
+      }
+
+      const { nombre, telefono, direccion, provincia, municipio } = req.body;
+
+      // Import dynamically to avoid circular dependency issues if any, though imports are at top
+      const { actualizarPerfil } = require("../controllers/usuario");
+
+      const updatedUser = await actualizarPerfil(usuarioId, {
+        nombre,
+        telefono,
+        direccion,
+        provincia,
+        municipio
+      });
+
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 router.post("/", authenticate(["admin"]), uploadManicure.single("foto"), async (req, res, next) => {
   try {
     const { usuario, nombre, contrasena, rol } = req.body;
     const cliente: { telefono: string } = req.body.cliente;
-    const manicure: {
-      foto?: string;
-      direccion: string;
-      provincia: string;
-      municipio: string;
-      telefono: string;
-    } = req.body.manicure;
+    let manicure = req.body.manicure;
+    if (typeof manicure === 'string') {
+      try {
+        manicure = JSON.parse(manicure);
+      } catch (e) {
+        console.error('Error parsing manicure JSON', e);
+      }
+    }
 
     if (!usuario || !nombre || !contrasena || !rol) {
       throw new AppError(
@@ -165,6 +198,15 @@ router.post("/", authenticate(["admin"]), uploadManicure.single("foto"), async (
 router.get("/manicures", authenticate(["admin", "cliente", "manicure"]), async (req, res, next) => {
   try {
     const users = await obtenerManicures();
+    res.status(200).json(users);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get("/clientes", authenticate(["admin", "manicure"]), async (req, res, next) => {
+  try {
+    const users = await obtenerClientes();
     res.status(200).json(users);
   } catch (error) {
     next(error);
@@ -280,6 +322,26 @@ router.put(
     }
   }
 );
+
+// Eliminar cuenta propia
+router.delete("/me", authenticate(["admin", "cliente", "manicure"]), async (req, res, next) => {
+  try {
+    const usuario = (req as any).userData?.usuario;
+    if (!usuario) {
+      throw new AppError("No se pudo determinar el usuario autenticado", 401);
+    }
+
+    const result = await eliminarUsuario(usuario);
+
+    if (result == 0) {
+      throw new AppError("Usuario no encontrado", 404);
+    }
+
+    res.status(200).json({ message: "Cuenta eliminada exitosamente" });
+  } catch (error) {
+    next(error);
+  }
+});
 
 router.delete("/:usuario", authenticate(["admin"]), async (req, res, next) => {
   try {
