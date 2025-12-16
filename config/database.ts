@@ -4,14 +4,19 @@ import * as dotenv from 'dotenv';
 // Load environment variables
 dotenv.config();
 
+const config = require("../config/config");
+const environment = process.env.NODE_ENV || "development";
+const configEnv = config[environment];
+
+
 // Database configuration
 const sequelize = new Sequelize({
-  dialect: 'postgres', // or 'postgres', 'sqlite', 'mssql'
-  host: process.env.DB_HOST|| 'localhost',
-  port:  parseInt(process.env.DB_PORT || '5433'),
-  database: process.env.DB_NAME || 'nailTimeNode',
-  username: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '',
+  dialect: configEnv.dialect, // or 'postgres', 'sqlite', 'mssql'
+  host: configEnv.host,
+  port: configEnv.port,
+  database: configEnv.database,
+  username: configEnv.username,
+  password: configEnv.password,
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   pool: {
     max: 5,
