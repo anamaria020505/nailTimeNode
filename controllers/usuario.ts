@@ -1,6 +1,9 @@
 import Usuario from "../models/usuario";
 import Cliente from "../models/cliente";
 import Manicure from "../models/manicure";
+import Reservacion from "../models/reservacion";
+import Servicio from "../models/servicio";
+import Notificacion from "../models/notificacion";
 import { deleteFile } from "../config/multer";
 import path from "path";
 import jwt from "jsonwebtoken";
@@ -327,19 +330,95 @@ export const login = async (usuario: string, contrasena: string) => {
 };
 
 export const eliminarUsuario = async (usuario: string) => {
-  // Verificar si es manicure y tiene foto para eliminarla
   const user = await Usuario.findByPk(usuario, {
     include: [{ model: Manicure, as: "manicure", required: false }],
   });
 
-  if (user) {
+  if (!user) {
+    throw new AppError("Usuario no encontrado", 404);
+  }
+
+  // Si es manicure, realizar proceso de "soft delete" y cancelación de reservas
+  if (user.rol === "manicure") {
     const manicure = await Manicure.findByPk(usuario);
+
+    // 1. Cancelar reservaciones pendientes o confirmadas
+    // Primero necesitamos encontrar los servicios de esta manicure para encontrar las reservas
+    const servicios = await Servicio.findAll({
+      where: { manicureidusuario: usuario },
+      attributes: ['id']
+    });
+
+    const servicioIds = servicios.map(s => s.id);
+
+    if (servicioIds.length > 0) {
+      // Find affected reservations to send notifications
+      const affectedReservations = await Reservacion.findAll({
+        where: {
+          servicioid: servicioIds,
+          estado: ["pendiente", "confirmada"]
+        }
+      });
+
+      // Update reservations
+      await Reservacion.update(
+        {
+          estado: "cancelada",
+          motivoCancelacion: "La manicure ha eliminado su perfil"
+        },
+        {
+          where: {
+            servicioid: servicioIds,
+            estado: ["pendiente", "confirmada"]
+          }
+        }
+      );
+
+      // Create notifications
+      const notifications = affectedReservations.map(res => ({
+        mensaje: `Tu reservación para el ${res.fecha} ha sido cancelada porque la manicure eliminó su perfil.`,
+        reservacionid: res.id,
+        clienteidusuario: res.clienteidusuario,
+        leido: false
+      }));
+
+      if (notifications.length > 0) {
+        await Notificacion.bulkCreate(notifications);
+      }
+    }
+
+    // 2. Eliminar foto si existe
     if (manicure?.foto) {
       const filePath = path.join(__dirname, "../uploads", manicure.foto);
       deleteFile(filePath);
     }
+
+    // 3. Anonymizar datos del Manicure
+    if (manicure) {
+      await manicure.update({
+        foto: null,
+        direccion: "Dirección eliminada",
+        provincia: "Eliminado",
+        municipio: "Eliminado",
+        telefono: "0000000000"
+      });
+    }
+
+    // 4. Anonymizar Usuario
+    // Generar una contraseña aleatoria/basura para que no se pueda acceder
+    const randomPass = Math.random().toString(36).slice(-8);
+
+    await user.update({
+      nombre: "Usuario Eliminado",
+      contrasena: randomPass, // Invalida el acceso
+      rol: "eliminado"
+    });
+
+    return { message: "Usuario eliminado y reservaciones canceladas exitosamente" };
   }
 
+  // Si no es manicure (ej. cliente), mantener el comportamiento actual de eliminación física
+  // O podrías aplicar una lógica similar si lo deseas para clientes
   const result = await Usuario.destroy({ where: { usuario } });
   return result;
 };

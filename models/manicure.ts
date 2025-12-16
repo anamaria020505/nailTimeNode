@@ -3,7 +3,7 @@ import database from "../config/database";
 
 interface ManicureAtributos {
   idusuario: string;
-  foto?: string;
+  foto?: string | null;
   direccion: string;
   provincia: string;
   municipio: string;
@@ -13,14 +13,13 @@ interface ManicureAtributos {
 }
 
 interface ManicureCreationAttributes
-  extends Optional<ManicureAtributos, "foto" | "createdAt" | "updatedAt"> {}
+  extends Optional<ManicureAtributos, "foto" | "createdAt" | "updatedAt"> { }
 
 class Manicure
   extends Model<ManicureAtributos, ManicureCreationAttributes>
-  implements ManicureAtributos
-{
+  implements ManicureAtributos {
   public idusuario!: string;
-  public foto?: string;
+  public foto?: string | null;
   public direccion!: string;
   public provincia!: string;
   public municipio!: string;

@@ -8,6 +8,7 @@ interface ReservacionAtributos {
   precio: number;
   fecha: Date;
   estado: "pendiente" | "confirmada" | "completada" | "cancelada";
+  motivoCancelacion?: string | null;
   horarioid: number;
   clienteidusuario: string;
   servicioid: number;
@@ -18,7 +19,7 @@ interface ReservacionAtributos {
 interface ReservacionCreationAttributes
   extends Optional<
     ReservacionAtributos,
-    "id" | "disenno" | "tamanno" | "createdAt" | "updatedAt"
+    "id" | "disenno" | "tamanno" | "motivoCancelacion" | "createdAt" | "updatedAt"
   > { }
 
 class Reservacion
@@ -30,6 +31,7 @@ class Reservacion
   public precio!: number;
   public fecha!: Date;
   public estado!: "pendiente" | "confirmada" | "completada" | "cancelada";
+  public motivoCancelacion?: string | null;
   public horarioid!: number;
   public clienteidusuario!: string;
   public servicioid!: number;
@@ -68,6 +70,10 @@ Reservacion.init(
         "cancelada"
       ),
       allowNull: false,
+    },
+    motivoCancelacion: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
     },
     horarioid: {
       type: DataTypes.INTEGER,
