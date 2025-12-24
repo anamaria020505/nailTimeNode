@@ -1,5 +1,6 @@
 import Disenno from "../models/disenno";
 import Manicure from "../models/manicure";
+import Usuario from "../models/usuario";
 import { deleteFile } from "../config/multer";
 import path from "path";
 const AppError = require("../errors/AppError");
@@ -12,7 +13,11 @@ export const obtenerDisennosPaginated = async (
   const offset = (page - 1) * limit;
 
   const { count, rows } = await Disenno.findAndCountAll({
-    include: [{ model: Manicure, as: "manicure" }],
+    include: [{
+      model: Manicure,
+      as: "manicure",
+      include: [{ model: Usuario, as: "usuario", attributes: ["nombre"] }]
+    }],
     order: [["createdAt", "DESC"]],
     limit: limit,
     offset: offset,
@@ -27,7 +32,11 @@ export const obtenerDisennosPaginated = async (
 // Obtener todos los diseños
 export const obtenerDisennos = async (): Promise<any> => {
   const { count, rows } = await Disenno.findAndCountAll({
-    include: [{ model: Manicure, as: "manicure" }],
+    include: [{
+      model: Manicure,
+      as: "manicure",
+      include: [{ model: Usuario, as: "usuario", attributes: ["nombre"] }]
+    }],
     order: [["createdAt", "DESC"]],
   });
 
@@ -43,7 +52,11 @@ export const obtenerDisennosPorManicure = async (
 ): Promise<any> => {
   const { count, rows } = await Disenno.findAndCountAll({
     where: { manicureidusuario },
-    include: [{ model: Manicure, as: "manicure" }],
+    include: [{
+      model: Manicure,
+      as: "manicure",
+      include: [{ model: Usuario, as: "usuario", attributes: ["nombre"] }]
+    }],
     order: [["createdAt", "DESC"]],
   });
 
@@ -56,7 +69,11 @@ export const obtenerDisennosPorManicure = async (
 // Obtener un diseño por ID
 export const obtenerDisennoPorId = async (id: number) => {
   const disenno = await Disenno.findByPk(id, {
-    include: [{ model: Manicure, as: "manicure" }]
+    include: [{
+      model: Manicure,
+      as: "manicure",
+      include: [{ model: Usuario, as: "usuario", attributes: ["nombre"] }]
+    }]
   });
   return disenno;
 };
