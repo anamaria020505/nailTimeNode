@@ -32,7 +32,8 @@ ClienteManicure.init(
       references: {
         model: 'manicure',
         key: 'idusuario'
-      }
+      },
+      onDelete: 'CASCADE',
     },
     clienteidusuario: {
       type: DataTypes.STRING(255),
@@ -41,7 +42,8 @@ ClienteManicure.init(
       references: {
         model: 'cliente',
         key: 'idusuario'
-      }
+      },
+      onDelete: 'CASCADE',
     },
     createdAt: {
       type: DataTypes.DATE,

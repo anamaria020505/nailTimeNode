@@ -82,6 +82,7 @@ Reservacion.init(
         model: "horario",
         key: "id",
       },
+      onDelete: 'CASCADE',
     },
     clienteidusuario: {
       type: DataTypes.STRING(255),
@@ -90,6 +91,7 @@ Reservacion.init(
         model: "cliente",
         key: "idusuario",
       },
+      onDelete: 'CASCADE',
     },
     servicioid: {
       type: DataTypes.INTEGER,
@@ -98,6 +100,7 @@ Reservacion.init(
         model: "servicio",
         key: "id",
       },
+      onDelete: 'CASCADE',
     },
     createdAt: {
       type: DataTypes.DATE,

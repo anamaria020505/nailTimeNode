@@ -43,7 +43,8 @@ Servicio.init(
       references: {
         model: 'manicure',
         key: 'idusuario'
-      }
+      },
+      onDelete: 'CASCADE',
     },
     createdAt: {
       type: DataTypes.DATE,

@@ -42,7 +42,8 @@ Notificacion.init(
       references: {
         model: 'reservacion',
         key: 'id'
-      }
+      },
+      onDelete: 'CASCADE',
     },
     leido: {
       type: DataTypes.BOOLEAN,
@@ -55,7 +56,8 @@ Notificacion.init(
       references: {
         model: 'manicure',
         key: 'idusuario'
-      }
+      },
+      onDelete: 'CASCADE',
     },
     clienteidusuario: {
       type: DataTypes.STRING(255),
@@ -63,7 +65,8 @@ Notificacion.init(
       references: {
         model: 'cliente',
         key: 'idusuario'
-      }
+      },
+      onDelete: 'CASCADE',
     },
     createdAt: {
       type: DataTypes.DATE,

@@ -3,7 +3,7 @@ import database from "../config/database";
 
 interface ClienteAtributos {
   idusuario: string;
-  telefono: string;
+  telefono?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -16,7 +16,7 @@ class Cliente
   implements ClienteAtributos
 {
   public idusuario!: string;
-  public telefono!: string;
+  public telefono!: string | null;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -31,10 +31,12 @@ Cliente.init(
         model: "usuario",
         key: "usuario",
       },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     telefono: {
       type: DataTypes.STRING(255),
-      allowNull: false,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,

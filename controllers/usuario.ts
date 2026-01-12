@@ -4,6 +4,7 @@ import Manicure from "../models/manicure";
 import Reservacion from "../models/reservacion";
 import Servicio from "../models/servicio";
 import Notificacion from "../models/notificacion";
+import ClienteManicure from "../models/clienteManicure";
 import { deleteFile } from "../config/multer";
 import path from "path";
 import jwt from "jsonwebtoken";
@@ -117,7 +118,7 @@ export const crearUsuario = async (
 
   // Create the user first
   const user = await Usuario.create({
-    usuario,
+    usuario: usuario.trim(),
     nombre,
     contrasena, // Hash the password
     rol,
@@ -125,12 +126,10 @@ export const crearUsuario = async (
 
   // Handle different roles
   if (rol === "cliente") {
-    if (cliente?.telefono) {
-      await Cliente.create({
-        idusuario: usuario,
-        telefono: cliente.telefono,
-      });
-    }
+    await Cliente.create({
+      idusuario: usuario.trim(),
+      telefono: cliente?.telefono || null,
+    });
   } else if (rol === "manicure") {
     if (!manicure) {
       throw new Error("Faltan campos requeridos para el rol manicure");
@@ -169,7 +168,7 @@ export const actualizarUsuario = async (
 ) => {
   // Crear objeto con los datos a actualizar
   const updateData: any = {
-    usuario,
+    usuario: usuario.trim(),
     nombre,
     rol,
   };
@@ -207,11 +206,11 @@ export const actualizarUsuario = async (
   }
 
   // Manejar la creación/actualización según el nuevo rol
-  if (rol === "cliente" && cliente) {
+  if (rol === "cliente") {
     await Cliente.upsert(
       {
-        idusuario: usuario,
-        telefono: cliente.telefono,
+        idusuario: usuario.trim(),
+        telefono: cliente?.telefono || null,
       },
       {
         conflictFields: ["idusuario"],
@@ -262,9 +261,9 @@ export const actualizarPerfil = async (
   }
 
   // Update role-specific fields
-  if (user.rol === "cliente" && data.telefono) {
+  if (user.rol === "cliente") {
     await Cliente.upsert(
-      { idusuario: usuarioId, telefono: data.telefono },
+      { idusuario: usuarioId, telefono: data.telefono || null },
       { conflictFields: ["idusuario"] }
     );
   } else if (user.rol === "manicure") {
@@ -292,7 +291,7 @@ export const logout = (token: string) => {
 };
 
 export const login = async (usuario: string, contrasena: string) => {
-  const user = await Usuario.findByPk(usuario, {
+  const user = await Usuario.findByPk(usuario.trim(), {
     include: [
       { model: Cliente, as: "cliente", required: false },
       { model: Manicure, as: "manicure", required: false },
@@ -330,95 +329,32 @@ export const login = async (usuario: string, contrasena: string) => {
 };
 
 export const eliminarUsuario = async (usuario: string) => {
-  const user = await Usuario.findByPk(usuario, {
+  const userTrimmed = usuario.trim();
+  
+  // 1. Encontrar el usuario para obtener datos antes de borrar (ej: foto de manicure)
+  let user = await Usuario.findByPk(usuario, {
     include: [{ model: Manicure, as: "manicure", required: false }],
   });
+
+  if (!user && usuario !== userTrimmed) {
+    user = await Usuario.findByPk(userTrimmed, {
+      include: [{ model: Manicure, as: "manicure", required: false }],
+    });
+    if (user) usuario = userTrimmed;
+  }
 
   if (!user) {
     throw new AppError("Usuario no encontrado", 404);
   }
 
-  // Si es manicure, realizar proceso de "soft delete" y cancelación de reservas
-  if (user.rol === "manicure") {
-    const manicure = await Manicure.findByPk(usuario);
-
-    // 1. Cancelar reservaciones pendientes o confirmadas
-    // Primero necesitamos encontrar los servicios de esta manicure para encontrar las reservas
-    const servicios = await Servicio.findAll({
-      where: { manicureidusuario: usuario },
-      attributes: ['id']
-    });
-
-    const servicioIds = servicios.map(s => s.id);
-
-    if (servicioIds.length > 0) {
-      // Find affected reservations to send notifications
-      const affectedReservations = await Reservacion.findAll({
-        where: {
-          servicioid: servicioIds,
-          estado: ["pendiente", "confirmada"]
-        }
-      });
-
-      // Update reservations
-      await Reservacion.update(
-        {
-          estado: "cancelada",
-          motivoCancelacion: "La manicure ha eliminado su perfil"
-        },
-        {
-          where: {
-            servicioid: servicioIds,
-            estado: ["pendiente", "confirmada"]
-          }
-        }
-      );
-
-      // Create notifications
-      const notifications = affectedReservations.map(res => ({
-        mensaje: `Tu reservación para el ${res.fecha} ha sido cancelada porque la manicure eliminó su perfil.`,
-        reservacionid: res.id,
-        clienteidusuario: res.clienteidusuario,
-        leido: false
-      }));
-
-      if (notifications.length > 0) {
-        await Notificacion.bulkCreate(notifications);
-      }
-    }
-
-    // 2. Eliminar foto si existe
-    if (manicure?.foto) {
-      const filePath = path.join(__dirname, "../uploads", manicure.foto);
-      deleteFile(filePath);
-    }
-
-    // 3. Anonymizar datos del Manicure
-    if (manicure) {
-      await manicure.update({
-        foto: null,
-        direccion: "Dirección eliminada",
-        provincia: "Eliminado",
-        municipio: "Eliminado",
-        telefono: "0000000000"
-      });
-    }
-
-    // 4. Anonymizar Usuario
-    // Generar una contraseña aleatoria/basura para que no se pueda acceder
-    const randomPass = Math.random().toString(36).slice(-8);
-
-    await user.update({
-      nombre: "Usuario Eliminado",
-      contrasena: randomPass, // Invalida el acceso
-      rol: "eliminado"
-    });
-
-    return { message: "Usuario eliminado y reservaciones canceladas exitosamente" };
+  // 2. Si es manicure, eliminar su foto física antes del cascade
+  if (user.rol === "manicure" && (user as any).manicure?.foto) {
+    const filePath = path.join(__dirname, "../uploads", (user as any).manicure.foto);
+    deleteFile(filePath);
   }
 
-  // Si no es manicure (ej. cliente), mantener el comportamiento actual de eliminación física
-  // O podrías aplicar una lógica similar si lo deseas para clientes
-  const result = await Usuario.destroy({ where: { usuario } });
+  // 3. Eliminación física total vía CASCADE definido en los modelos
+  const result = await Usuario.destroy({ where: { usuario: usuario } });
+  
   return result;
 };

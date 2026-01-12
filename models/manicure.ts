@@ -38,6 +38,8 @@ Manicure.init(
         model: "usuario",
         key: "usuario",
       },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     foto: {
       type: DataTypes.STRING(255),

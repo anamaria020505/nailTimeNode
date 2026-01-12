@@ -5,8 +5,20 @@ import Servicio from "../models/servicio";
 import Usuario from "../models/usuario";
 import Manicure from "../models/manicure";
 import * as notificacionController from "./notificacion";
-const AppError = require("../errors/AppError");
 import { Op } from "sequelize";
+const AppError = require("../errors/AppError");
+
+// Función auxiliar para formatear la fecha sin desfases por zona horaria
+const formatFechaNotificacion = (fecha: any): string => {
+  if (!fecha) return "sin fecha";
+  // Si viene como string (YYYY-MM-DD), lo separamos directamente
+  const fechaStr = typeof fecha === 'string' ? fecha : new Date(fecha).toISOString();
+  const partes = fechaStr.split('T')[0].split('-');
+  if (partes.length === 3) {
+    return `${partes[2]}/${partes[1]}/${partes[0]}`;
+  }
+  return new Date(fecha).toLocaleDateString('es-ES');
+};
 
 
 export const obtenerReservacionesPaginated = async (
@@ -120,7 +132,7 @@ export const crearReservacion = async (
   const horario = await Horario.findByPk(horarioid);
   if (horario) {
     // Enviar notificación a la manicure
-    const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES');
+    const fechaFormateada = formatFechaNotificacion(fecha);
     const mensaje = `Nueva reservación creada para el ${fechaFormateada}. Estado: ${estado}`;
     await notificacionController.crearNotificacionParaManicure(
       reservacion.id,
@@ -169,7 +181,7 @@ export const actualizarReservacion = async (
   const horario = await Horario.findByPk(horarioid);
   if (horario) {
     // Enviar notificación a la manicure
-    const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES');
+    const fechaFormateada = formatFechaNotificacion(fecha);
     const mensaje = `Reservación #${id} modificada para el ${fechaFormateada}. Nuevo estado: ${estado}`;
     await notificacionController.crearNotificacionParaManicure(
       id,
@@ -189,7 +201,7 @@ export const eliminarReservacion = async (id: number) => {
     const horario = await Horario.findByPk(reservacion.horarioid);
     if (horario) {
       // Enviar notificación a la manicure
-      const fechaFormateada = new Date(reservacion.fecha).toLocaleDateString('es-ES');
+      const fechaFormateada = formatFechaNotificacion(reservacion.fecha);
       const mensaje = `Reservación #${id} cancelada para el ${fechaFormateada}`;
       await notificacionController.crearNotificacionParaManicure(
         id,
@@ -301,7 +313,7 @@ export const cambiarEstadoReservacion = async (
   }
 
   // Notificaciones
-  const fechaFormateada = new Date(reservacion.fecha).toLocaleDateString('es-ES');
+  const fechaFormateada = formatFechaNotificacion(reservacion.fecha);
   const estadoTexto = {
     pendiente: "pendiente",
     confirmada: "confirmada",
@@ -463,7 +475,7 @@ export const reprogramarReservacion = async (
 
   const nuevoHorario = await Horario.findByPk(horarioid);
   if (nuevoHorario) {
-    const fechaFormateada = new Date(fecha).toLocaleDateString('es-ES');
+    const fechaFormateada = formatFechaNotificacion(fecha);
     const mensaje = `El cliente ha reprogramado la reservación #${id} para el ${fechaFormateada}`;
     await notificacionController.crearNotificacionParaManicure(
       id,
