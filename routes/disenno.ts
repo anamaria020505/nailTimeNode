@@ -49,7 +49,7 @@ router.post("/", authenticate(["manicure"]),  uploadDisenio.single("imagen"), as
 });
 
 // Obtener todos los diseños
-router.get("/", authenticate(["manicure","cliente"]),  async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const disenios = await obtenerDisennos();
     res.status(200).json(disenios);
@@ -75,7 +75,7 @@ router.get("/manicure/:manicureidusuario", authenticate(["manicure"]),  async (r
 });
 
 // Obtener diseños con paginación
-router.get("/:page/:limit", authenticate(["manicure","cliente"]),  async (req, res, next) => {
+router.get("/:page/:limit", async (req, res, next) => {
   try {
     const page = parseInt(req.params.page);
     const limit = parseInt(req.params.limit);
